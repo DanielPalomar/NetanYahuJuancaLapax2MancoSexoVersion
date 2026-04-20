@@ -1,76 +1,66 @@
-import { Link, NavLink, useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
-const Navbar = () => {
-  const location = useLocation();
-  const isAuthenticated = localStorage.getItem('token') !== null;
+// Barra de navegación simple - Marcos la controla todo
+const Barra = () => {
+  // Hook para saber dónde estamos
+  const ubicacion = useLocation();
+  // Verificamos si el usuario tiene token
+  const tieneToken = localStorage.getItem('token') !== null;
 
-  // No renderizar el Navbar en la página de login o registro
-  if (location.pathname === '/login' || location.pathname === '/registro') {
+  // No mostramos barra en login ni registro
+  if (ubicacion.pathname === '/login' || ubicacion.pathname === '/registro') {
     return null;
   }
 
-  const handleLogout = () => {
+  // Función para cerrar sesión
+  const cerrarSesion = () => {
     localStorage.removeItem('token');
     window.location.href = '/login';
   };
 
-  // Clases comunes y activas para los enlaces
-  const baseLinkClasses = "transition-colors font-medium";
-  const activeLinkClasses = "text-green-600 font-bold border-b-2 border-green-600 pb-1";
-  const inactiveLinkClasses = "text-gray-500 hover:text-green-600";
-
   return (
     <nav className="bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-gray-100 shadow-sm px-6 py-4 flex justify-between items-center">
+      {/* Logo y nombre */}
       <div className="flex items-center gap-2">
         <div className="bg-green-600 p-1.5 rounded-lg">
-          <span className="text-white font-bold text-xl">P</span>
+          <span className="text-white font-bold text-xl">MancoNoob</span>
         </div>
-        <Link to="/" className="text-xl font-bold text-gray-800">PantryControl</Link>
+        <Link to="/" className="text-xl font-bold text-gray-800">Esto se cambia luego</Link>
       </div>
       
+      {/* Enlaces principales (solo en pantallas grandes) */}
       <div className="hidden md:flex items-center space-x-8">
-        <NavLink 
-          to="/" 
-          className={({ isActive }) => 
-            `${baseLinkClasses} ${isActive && location.pathname === '/' ? activeLinkClasses : inactiveLinkClasses}`
-          }
-        >
+        <Link to="/" className="text-gray-500 hover:text-green-600 transition-colors font-medium">
           Inicio
-        </NavLink>
-        <NavLink 
-          to="/despensa" 
-          className={({ isActive }) => 
-            `${baseLinkClasses} ${isActive ? activeLinkClasses : inactiveLinkClasses}`
-          }
-        >
+        </Link>
+        <Link to="/despensa" className="text-gray-500 hover:text-green-600 transition-colors font-medium">
           Despensa
-        </NavLink>
-        <NavLink 
-          to="/recetas" 
-          className={({ isActive }) => 
-            `${baseLinkClasses} ${isActive || location.pathname.includes('/recetas') ? activeLinkClasses : inactiveLinkClasses}`
-          }
-        >
-          Recetas
-        </NavLink>
+        </Link>
+        <Link to="/recetas" className="text-gray-500 hover:text-green-600 transition-colors font-medium">
+          Recetario de la abuela
+        </Link>
       </div>
 
+      {/* Botones de sesión y escáner */}
       <div className="flex items-center gap-4">
-        {!isAuthenticated ? (
+        {!tieneToken ? (
+          // Si no hay token, mostramos botón de iniciar sesión
           <Link to="/login" className="text-gray-600 font-medium hover:text-green-600 transition-colors hidden md:block">
             Iniciar Sesión
           </Link>
         ) : (
-          <button onClick={handleLogout} className="text-red-500 font-medium hover:text-red-600 transition-colors hidden md:block cursor-pointer">
+          // Si hay token, mostramos botón de cerrar sesión
+          <button onClick={cerrarSesion} className="text-red-500 font-medium hover:text-red-600 transition-colors hidden md:block cursor-pointer">
             Cerrar Sesión
           </button>
         )}
+        {/* Botón de escáner (siempre visible) */}
         <Link to="/escanear" className="bg-green-600 text-white px-5 py-2 rounded-full font-medium hover:bg-green-700 transition-all shadow-md">
-          Escáner
+          Escanearr
         </Link>
       </div>
     </nav>
   );
 };
 
-export default Navbar;
+export default Barra;

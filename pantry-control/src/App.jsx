@@ -1,93 +1,103 @@
 import { BrowserRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom';
-import Navbar from './components/Navbar';
-import Pantry from './pages/Pantry'; 
-import AddProduct from './pages/AddProduct';
+import { LayoutGrid, Utensils, Users } from 'lucide-react'; 
+import Barra from './components/Navbar';
+import Despensa from './pages/Pantry'; 
+import AñadirProducto from './pages/AddProduct';
 import Recetas from './pages/Recetas';
-import RecipeDetail from './pages/RecipeDetail';
-import Login from './pages/Login';
-import Register from './pages/Register';
+import DetalleReceta from './pages/RecipeDetail';
+import Ingreso from './pages/Login';
+import Registro from './pages/Register';
 
-// Componente para proteger las rutas
-const PrivateRoute = ({ children }) => {
-  const isAuthenticated = localStorage.getItem('token') !== null;
-  return isAuthenticated ? children : <Navigate to="/login" />;
-};
+function RutaPrivada({ hijos }) {
+  const token = localStorage.getItem('token');
 
-// Componente de Inicio con Tailwind v4
-const Home = () => (
-  <main className="bg-gradient-to-b from-white to-green-50 min-h-[calc(100vh-64px)] flex items-center">
-    <div className="max-w-7xl mx-auto px-4 py-16 text-center">
-      <h1 className="text-5xl md:text-7xl font-extrabold text-gray-900 mb-6 tracking-tight">
-        Controla tu despensa, <br />
-        <span className="text-green-600 italic">evita el desperdicio.</span>
-      </h1>
-      <p className="text-xl text-gray-600 mb-10 max-w-2xl mx-auto leading-relaxed">
-        La forma más inteligente de organizar tus alimentos y descubrir recetas 
-        basadas en lo que ya tienes. Únete al consumo responsable. 🍏
-      </p>
-      
-      <div className="flex flex-col sm:flex-row gap-4 justify-center">
-        <Link to="/despensa" className="px-8 py-4 bg-green-600 text-white rounded-2xl font-bold text-lg hover:bg-green-700 transition-all shadow-xl shadow-green-100">
-          Ir a mi Despensa
-        </Link>
-        <Link to="/recetas" className="px-8 py-4 bg-white text-gray-700 border border-gray-200 rounded-2xl font-bold text-lg hover:bg-gray-50 transition-all shadow-sm">
-          Ver Recetas (RF7)
-        </Link>
+  // Si no hay token, lo mandamos al login
+  if (token === null) {
+    return <Navigate to="/login" />;
+  }
+
+  // Si hay token, cargamos la página
+  return hijos;
+}
+
+// PÁGINA DE INICIO: Limpia y con sección Quiénes Somos
+function Inicio() {
+  return (
+    <main className="bg-white min-h-[calc(100vh-64px)]">
+      <div className="max-w-4xl mx-auto px-6 py-20 text-center">
+        
+        {/* Encabezado */}
+        <h1 className="text-4xl font-bold text-gray-900 mb-4">
+          PantryControl
+        </h1>
+        <p className="text-lg text-gray-500 mb-10">
+          Organiza tu comida y ahorra dinero cada día.
+        </p>
+        
+        {/* Botones principales */}
+        <div className="flex justify-center gap-4 mb-20">
+          <Link to="/despensa" className="flex items-center gap-2 px-6 py-3 bg-green-600 text-white rounded-md font-medium">
+            <LayoutGrid size={18} /> Mi Despensa
+          </Link>
+          <Link to="/recetas" className="flex items-center gap-2 px-6 py-3 bg-gray-100 text-gray-700 rounded-md font-medium">
+            <Utensils size={18} /> Recetas
+          </Link>
+        </div>
+
+        {/* Sección Quiénes Somos */}
+        <section className="border-t border-gray-100 pt-12">
+          <div className="flex justify-center mb-4 text-green-600">
+            <Users size={28} />
+          </div>
+          <h2 className="text-xl font-bold text-gray-800 mb-4">Quiénes Somos</h2>
+          <p className="text-gray-600 max-w-2xl mx-auto">
+            Somos el <strong>Grupo Puente4</strong>. Hemos creado esta plataforma para facilitar 
+            la gestión de alimentos en el hogar, reducir el desperdicio y promover 
+            un estilo de vida más organizado y sostenible.
+          </p>
+        </section>
+
       </div>
-
-      <div className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-          <span className="text-3xl mb-4 block">⏰</span>
-          <h3 className="font-bold text-gray-800 mb-2">Alertas de Caducidad</h3>
-          <p className="text-gray-500 text-sm">Te avisamos antes de que tus productos se estropeen.</p>
-        </div>
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-          <span className="text-3xl mb-4 block">🔍</span>
-          <h3 className="font-bold text-gray-800 mb-2">Escaneo Inteligente</h3>
-          <p className="text-gray-500 text-sm">Añade productos en segundos con tu cámara.</p>
-        </div>
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-          <span className="text-3xl mb-4 block">♻️</span>
-          <h3 className="font-bold text-gray-800 mb-2">Impacto Positivo</h3>
-          <p className="text-gray-500 text-sm">Ayuda al planeta reduciendo el desperdicio alimentario.</p>
-        </div>
-      </div>
-    </div>
-  </main>
-);
+    </main>
+  );
+}
 
 function App() {
   return (
     <Router>
       <div className="min-h-screen bg-white flex flex-col">
-        <Navbar />
+        {/* Menú de navegación */}
+        <Barra />
 
-        {/* Contenido Principal */}
+        {/* Contenido según la URL */}
         <div className="flex-1">
           <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route path="/registro" element={<Register />} />
+            {/* Rutas para cualquier usuario */}
+            <Route path="/login" element={<Ingreso />} />
+            <Route path="/registro" element={<Registro />} />
             
-            {/* Rutas Privadas */}
-            <Route path="/" element={<PrivateRoute><Home /></PrivateRoute>} />
-            <Route path="/despensa" element={<PrivateRoute><Pantry /></PrivateRoute>} />
-            <Route path="/recetas" element={<PrivateRoute><Recetas /></PrivateRoute>} />
-            <Route path="/recetas/:id" element={<PrivateRoute><RecipeDetail /></PrivateRoute>} />
+            {/* Rutas protegidas (solo para usuarios con cuenta) */}
+            <Route path="/" element={<RutaPrivada hijos={<Inicio />} />} />
+            <Route path="/despensa" element={<RutaPrivada hijos={<Despensa />} />} />
+            <Route path="/recetas" element={<RutaPrivada hijos={<Recetas />} />} />
+            <Route path="/recetas/:id" element={<RutaPrivada hijos={<DetalleReceta />} />} />
+            
+            {/* Otras páginas */}
             <Route path="/escanear" element={
-              <PrivateRoute>
+              <RutaPrivada hijos={
                 <div className="p-10 text-center">
-                  <h2 className="text-3xl font-bold text-gray-800">Escáner de Productos</h2>
-                  <p className="text-gray-500 mt-2">Usa la cámara para registrar alimentos (RF2).</p>
+                  <h2 className="text-xl font-bold">Escáner de cámara</h2>
                 </div>
-              </PrivateRoute>
+              } />
             } />
-            <Route path="/añadir" element={<PrivateRoute><AddProduct /></PrivateRoute>} />
+            
+            <Route path="/añadir" element={<RutaPrivada hijos={<AñadirProducto />} />} />
           </Routes>
         </div>
 
-        {/* Footer */}
-        <footer className="bg-white border-t border-gray-100 py-8 text-center text-gray-400 text-sm">
-          <p>© 2026 Grupo Puente4 - IES Julio Verne</p>
+        {/* Pie de página final */}
+        <footer className="py-6 text-center text-gray-400 text-sm border-t border-gray-50">
+          <p>© 2026 PantryControl | Grupo Puente4</p>
         </footer>
       </div>
     </Router>
@@ -95,3 +105,4 @@ function App() {
 }
 
 export default App;
+//gracias Lapa por tanto y perdón por tan poco 
