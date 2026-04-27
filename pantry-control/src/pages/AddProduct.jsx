@@ -1,147 +1,262 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Save, Camera, ArrowLeft, Package, Tag, Calendar, Hash } from 'lucide-react';
-// import { serviciosAPI } from '../services/api'; esto es para la api 
+import { useState, useEffect, useRef } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import {
+  Save, Camera, ChevronLeft,
+  Package, Tag, Calendar,
+  Hash, Search, Sparkles
+} from 'lucide-react';
+import Quagga from 'quagga';
+import { serviciosAPI } from '../services/api';
 
-// Página para añadir productos a la despensa - MarkCuadro gestiona aquí
-const AñadirProducto = () => {
+// PÁGINA DE AÑADIR PRODUCTO
+function AñadirProducto() {
   const navegar = useNavigate();
-  
-  // Datos del producto que vamos a añadir
+
+  // Estado de Datos
   const [datos, setDatos] = useState({
     nombre: '',
     marca: '',
+    codigoBarras: '',
     fechaCaducidad: '',
-    cantidad: 1
+    cantidad: 1,
   });
-  
-  // Control de carga
-  const [cargando, setCargando] = useState(false);
 
-  // Función para guardar el producto
-  const guardar = (e) => {
+  const [cargando, setCargando] = useState(false);
+  const [escaneando, setEscaneando] = useState(false);
+  const [buscandoManual, setBuscandoManual] = useState(false);
+
+  // Referencias para el escáner
+  const ultimoCodigoRef = useRef(null);
+  const contadorRef = useRef(0);
+  const sonidoRef = useRef(new Audio('https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3'));
+
+  // BUSCAR PRODUCTO POR CÓDIGO
+
+  async function fetchProducto(codigo) {
+    try {
+      const resultado = await serviciosAPI.obtenerProductoPorCodigoBarras(codigo);
+      if (resultado) {
+        setDatos(prev => ({
+          ...prev,
+          nombre: resultado.nombre || prev.nombre,
+          marca: resultado.marca || prev.marca,
+          codigoBarras: codigo,
+          url_image: resultado.url_image || prev.url_image
+        }));
+      } else {
+        setDatos(prev => ({ ...prev, codigoBarras: codigo }));
+      }
+    } catch (e) {
+      console.error('Error buscando producto:', e);
+      setDatos(prev => ({ ...prev, codigoBarras: codigo }));
+    }
+  }
+
+  // CONFIGURACIÓN DEL ESCÁNER
+  useEffect(() => {
+    if (!escaneando) return;
+
+    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+    Quagga.init({
+      inputStream: {
+        type: 'LiveStream',
+        target: document.querySelector('#scanner'),
+        constraints: isMobile ? { facingMode: 'environment' } : { facingMode: 'user' }
+      },
+      locator: { patchSize: 'medium', halfSample: true },
+      decoder: { readers: ['ean_reader', 'ean_8_reader', 'code_128_reader'] },
+      locate: true,
+      frequency: 5
+    }, (err) => {
+      if (!err) Quagga.start();
+    });
+
+    Quagga.onDetected((data) => {
+      const codigo = data.codeResult.code;
+      if (codigo.length < 8) return;
+
+      // Control de precisión
+      if (codigo === ultimoCodigoRef.current) {
+        contadorRef.current++;
+      } else {
+        ultimoCodigoRef.current = codigo;
+        contadorRef.current = 1;
+      }
+
+      // Si detectamos el mismo código 3 veces seguidas, lo damos por válido
+      if (contadorRef.current >= 3) {
+        fetchProducto(codigo);
+        if (sonidoRef.current) sonidoRef.current.play().catch(() => { });
+        setEscaneando(false);
+        contadorRef.current = 0;
+      }
+    });
+
+    return () => Quagga.stop();
+  }, [escaneando]);
+
+  // GUARDAR EN LA DESPENSA
+  async function manejarGuardar(e) {
     e.preventDefault();
     setCargando(true);
-    
-    // Aquí iría la llamada real al backend: await serviciosAPI.anadirProducto(datos)
-    console.log("Producto guardado:", datos);
-    
-    // Simulamos el guardado
-    setTimeout(() => {
-      setCargando(false);
+    try {
+      await serviciosAPI.anadirProducto(datos);
       navegar('/despensa');
-    }, 800);
-  };
+    } catch (error) {
+      alert("Error al guardar el producto. Verifica la conexión.");
+    } finally {
+      setCargando(false);
+    }
+  }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6 md:p-10 flex flex-col items-center">
-      <div className="w-full max-w-2xl">
-        {/* Botón volver atrás */}
-        <button 
-          onClick={() => navegar(-1)} 
-          className="flex items-center gap-2 text-gray-500 hover:text-green-600 transition-colors mb-8 font-medium"
-        >
-          <ArrowLeft size={20} /> Volver a la despensa
+    <div className="min-h-screen pb-24 pt-12 px-6 transition-colors">
+
+      <div className="max-w-2xl mx-auto">
+
+        {/* Volver */}
+        <button onClick={() => navegar('/despensa')} className="inline-flex items-center gap-2 text-gray-400 dark:text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors font-bold text-sm mb-10 group">
+          <ChevronLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
+          Volver a mi Despensa
         </button>
 
-        {/* Tarjeta principal */}
-        <div className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
-          {/* Encabezado verde */}
-          <div className="bg-green-600 p-8 text-white text-center">
-            <h2 className="text-3xl font-extrabold mb-2">Añadir Producto</h2>
-            <p className="text-green-100">Escanea o introduce los datos manualmente</p>
+
+        {/* Cabecera */}
+        <div className="mb-10">
+          <div className="inline-flex items-center gap-2 bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest mb-4">
+            <Sparkles size={14} />
+            <span>Nuevo Ingrediente</span>
           </div>
+          <h2 className="text-4xl font-black text-gray-900 dark:text-white tracking-tight">Añadir Producto</h2>
+        </div>
 
-          {/* Contenido del formulario */}
-          <div className="p-8">
-            {/* Botón de escanear código de barras */}
-            <button className="w-full bg-blue-50 text-blue-600 border border-blue-100 py-4 rounded-2xl flex items-center justify-center gap-3 hover:bg-blue-100 hover:border-blue-200 transition-all mb-8 font-bold shadow-sm group">
-              <Camera size={24} className="group-hover:scale-110 transition-transform" /> 
-              Escanear Código de Barras
-            </button>
 
-            {/* Separador */}
-            <div className="flex items-center gap-4 mb-8">
-              <div className="h-px bg-gray-200 flex-1"></div>
-              <span className="text-gray-400 text-sm font-medium">O añade manualmente</span>
-              <div className="h-px bg-gray-200 flex-1"></div>
+        {/* Control del Escáner */}
+        <div className="mb-10">
+          <button
+            onClick={() => setEscaneando(!escaneando)}
+            className={`w-full py-5 rounded-[32px] font-black flex items-center justify-center gap-3 transition-all shadow-sm ${escaneando ? 'bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-800/30' : 'bg-green-600 text-white hover:bg-green-700'
+              }`}
+          >
+            <Camera size={24} />
+            {escaneando ? "Cerrar Escáner" : "Escanear Código de Barras"}
+          </button>
+
+
+          {escaneando && (
+            <div className="mt-6 relative rounded-[40px] overflow-hidden border-4 border-white shadow-2xl bg-black aspect-video">
+              <div id="scanner" className="w-full h-full object-cover" />
+              <div className="absolute inset-0 border-[40px] border-black/20 pointer-events-none flex items-center justify-center">
+                <div className="w-64 h-32 border-2 border-green-400/50 rounded-xl" />
+              </div>
+            </div>
+          )}
+        </div>
+
+        <form onSubmit={manejarGuardar} className="bg-white dark:bg-gray-900 rounded-[44px] p-8 md:p-12 shadow-sm border border-gray-100 dark:border-gray-800 space-y-10">
+
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+            {/* Nombre */}
+            <div className="md:col-span-2 space-y-2">
+              <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-gray-300 ml-1">
+                <Package size={14} /> Nombre del Alimento
+              </label>
+              <input
+                type="text"
+                required
+                placeholder="Ej: Macarrones integrales"
+                className="w-full px-7 py-5 bg-gray-50 dark:bg-gray-800 border-transparent focus:border-green-500 focus:bg-white dark:focus:bg-gray-700 rounded-[24px] outline-none transition-all font-bold text-gray-800 dark:text-gray-100 placeholder:text-gray-200 dark:placeholder:text-gray-600"
+                value={datos.nombre}
+                onChange={e => setDatos({ ...datos, nombre: e.target.value })}
+              />
+
             </div>
 
-            {/* Formulario para añadir producto */}
-            <form onSubmit={guardar} className="space-y-5">
-              {/* Campo nombre */}
+            {/* Código de Barras y Búsqueda */}
+            <div className="md:col-span-2 space-y-2">
+              <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-gray-300 ml-1">
+                <Hash size={14} /> Código de Barras
+              </label>
               <div className="relative">
-                <Package className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
-                <input 
-                  type="text" 
-                  placeholder="Nombre del producto (ej: Leche)" 
-                  className="w-full pl-12 pr-4 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-green-500 transition-all outline-none text-gray-700 font-medium"
-                  required 
-                  value={datos.nombre}
-                  onChange={(e) => setDatos({...datos, nombre: e.target.value})}
+                <input
+                  type="text"
+                  placeholder="841000..."
+                  className="w-full px-7 py-5 bg-gray-50 border-transparent focus:border-green-500 focus:bg-white rounded-[24px] outline-none transition-all font-bold text-gray-800"
+                  value={datos.codigoBarras}
+                  onChange={e => setDatos({ ...datos, codigoBarras: e.target.value })}
                 />
+                <button
+                  type="button"
+                  onClick={() => fetchProducto(datos.codigoBarras)}
+                  disabled={buscandoManual || !datos.codigoBarras}
+                  className="absolute right-3 top-3 bottom-3 px-5 bg-white dark:bg-gray-700 text-green-600 dark:text-green-400 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-600 font-bold hover:bg-green-50 dark:hover:bg-gray-600 transition-colors flex items-center gap-2 disabled:opacity-30"
+                >
+                  {buscandoManual ? <div className="w-4 h-4 border-2 border-green-500 border-t-transparent rounded-full animate-spin" /> : <Search size={18} />}
+                  <span>Buscar</span>
+                </button>
+
               </div>
+            </div>
 
-              {/* Campo marca */}
-              <div className="relative">
-                <Tag className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
-                <input 
-                  type="text" 
-                  placeholder="Marca" 
-                  className="w-full pl-12 pr-4 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-green-500 transition-all outline-none text-gray-700 font-medium"
-                  value={datos.marca}
-                  onChange={(e) => setDatos({...datos, marca: e.target.value})}
-                />
-              </div>
+            {/* Marca */}
+            <div className="space-y-2">
+              <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-gray-300 ml-1">
+                <Tag size={14} /> Marca
+              </label>
+              <input
+                type="text"
+                placeholder="Marca del producto"
+                className="w-full px-7 py-5 bg-gray-50 border-transparent focus:border-green-500 focus:bg-white rounded-[24px] outline-none transition-all font-bold text-gray-800"
+                value={datos.marca}
+                onChange={e => setDatos({ ...datos, marca: e.target.value })}
+              />
+            </div>
 
-              {/* Campos fecha y cantidad */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                {/* Campo fecha de caducidad */}
-                <div className="relative">
-                  <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
-                  <input 
-                    type="date" 
-                    className="w-full pl-12 pr-4 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-green-500 transition-all outline-none text-gray-700 font-medium"
-                    required 
-                    value={datos.fechaCaducidad}
-                    onChange={(e) => setDatos({...datos, fechaCaducidad: e.target.value})}
-                  />
-                  <label className="absolute -top-2 left-4 bg-white px-1 text-xs text-gray-400 font-medium rounded">Caducidad</label>
-                </div>
+            {/* Cantidad */}
+            <div className="space-y-2">
+              <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-gray-300 ml-1">
+                <Hash size={14} /> Cantidad
+              </label>
+              <input
+                type="number"
+                min="1"
+                className="w-full px-7 py-5 bg-gray-50 border-transparent focus:border-green-500 focus:bg-white rounded-[24px] outline-none transition-all font-bold text-gray-800"
+                value={datos.cantidad}
+                onChange={e => setDatos({ ...datos, cantidad: e.target.value })}
+              />
+            </div>
 
-                {/* Campo cantidad */}
-                <div className="relative">
-                  <Hash className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
-                  <input 
-                    type="number" 
-                    placeholder="Cantidad" 
-                    min="1"
-                    className="w-full pl-12 pr-4 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-green-500 transition-all outline-none text-gray-700 font-medium"
-                    value={datos.cantidad}
-                    onChange={(e) => setDatos({...datos, cantidad: e.target.value})}
-                  />
-                  <label className="absolute -top-2 left-4 bg-white px-1 text-xs text-gray-400 font-medium rounded">Cantidad</label>
-                </div>
-              </div>
-
-              {/* Botón guardar */}
-              <button 
-                type="submit" 
-                disabled={cargando}
-                className="w-full mt-8 bg-green-600 text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-2 hover:bg-green-700 transition-all shadow-xl shadow-green-100 disabled:opacity-70"
-              >
-                {cargando ? 'Guardando...' : (
-                  <>
-                    <Save size={20} /> Guardar en Despensa
-                  </>
-                )}
-              </button>
-            </form>
+            {/* Fecha Caducidad */}
+            <div className="md:col-span-2 space-y-2">
+              <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-gray-300 ml-1">
+                <Calendar size={14} /> Fecha de Caducidad
+              </label>
+              <input
+                type="date"
+                required
+                className="w-full px-7 py-5 bg-gray-50 border-transparent focus:border-green-500 focus:bg-white rounded-[24px] outline-none transition-all font-bold text-gray-800"
+                value={datos.fechaCaducidad}
+                onChange={e => setDatos({ ...datos, fechaCaducidad: e.target.value })}
+              />
+            </div>
           </div>
-        </div>
+
+          {/* Botón Final */}
+          <button
+            type="submit"
+            disabled={cargando}
+            className="w-full py-6 bg-gray-900 dark:bg-white text-white dark:text-black rounded-[28px] font-black text-xl shadow-2xl shadow-gray-200 dark:shadow-none hover:bg-black dark:hover:bg-gray-100 transition-all transform active:scale-95 flex items-center justify-center gap-4 disabled:opacity-50"
+          >
+            {cargando ? "Guardando..." : <><Save size={24} /> Registrar en Despensa</>}
+          </button>
+
+        </form>
       </div>
     </div>
   );
-};
+}
 
 export default AñadirProducto;

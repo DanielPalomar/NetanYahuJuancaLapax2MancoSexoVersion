@@ -1,144 +1,144 @@
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Clock, Flame, ArrowLeft, CheckCircle2, UtensilsCrossed } from 'lucide-react';
-// import { serviciosAPI } from '../services/api';
+import { serviciosAPI } from '../services/api';
 
 // Página con el detalle completo de una receta
-const DetalleReceta = () => {
+function DetalleReceta() {
   const { id } = useParams();
   const navegar = useNavigate();
+  const [receta, setReceta] = useState(null);
+  const [cargando, setCargando] = useState(true);
 
-  // Datos simulados de la receta (cuando conectemos Spring, vendrán del backend con el id)
-  // const receta = await serviciosAPI.obtenerDetalleReceta(id);
-  const receta = {
-    id,
-    titulo: "Pasta Cremosa con Yogur",
-    tiempo: "15 min",
-    dificultad: "Fácil",
-    ingredienteClave: "Yogur Griego",
-    imagen: "https://images.unsplash.com/photo-1546549032-9571cd6b27df?auto=format&fit=crop&w=1200&q=80",
-    raciones: 2,
-    // Ingredientes: marcamos cuáles tenemos en la despensa
-    ingredientes: [
-      { nombre: "Pasta (Macarrones)", cantidad: "200g", enDespensa: true },
-      { nombre: "Yogur Griego", cantidad: "1 unidad", enDespensa: true, critico: true },
-      { nombre: "Ajo", cantidad: "1 diente", enDespensa: false },
-      { nombre: "Queso Parmesano", cantidad: "30g", enDespensa: true },
-      { nombre: "Aceite de Oliva", cantidad: "1 cucharada", enDespensa: true }
-    ],
-    // Pasos para hacer la receta
-    pasos: [
-      "Hierve la pasta en abundante agua con sal hasta que esté al dente.",
-      "Mientras tanto, en una sartén grande con aceite de oliva, sofríe el ajo finamente picado.",
-      "Añade el yogur griego a la sartén a fuego muy bajo (para que no se corte) y mezcla bien.",
-      "Incorpora la pasta escurrida a la salsa de yogur.",
-      "Añade el queso parmesano, pimienta negra al gusto y sirve inmediatamente."
-    ]
-  };
+  useEffect(function () {
+    async function cargar() {
+      try {
+        const datos = await serviciosAPI.obtenerDetalleReceta(id);
+        if (datos) {
+          setReceta(datos);
+        }
+      } catch (err) {
+        console.error('Error al cargar receta:', err);
+      } finally {
+        setCargando(false);
+      }
+    }
+    cargar();
+  }, [id]);
+
+  if (cargando) {
+    return <div className="p-20 text-center">Cargando receta...</div>;
+  }
+
+  if (!receta) {
+    return <div className="p-20 text-center">No se ha encontrado la receta.</div>;
+  }
+
+  let listaPasos = [];
+  if (typeof receta.instrucciones === 'string') {
+    listaPasos = receta.instrucciones.split('.').filter(function (p) { return p.trim().length > 0; });
+  } else if (Array.isArray(receta.instrucciones)) {
+    listaPasos = receta.instrucciones;
+  }
 
   return (
-    <div className="min-h-[calc(100vh-64px)] bg-gray-50 pb-20">
-      {/* Imagen hero de la receta */}
-      <div className="h-64 md:h-96 w-full relative">
-        <img 
-          src={receta.imagen} 
-          alt={receta.titulo} 
+    <div className="min-h-[calc(100vh-64px)] pb-16 transition-colors">
+
+      {/* Imagen de la receta */}
+      <div className="h-64 md:h-80 w-full relative">
+        <img
+          src={receta.imagen}
+          alt={receta.titulo}
           className="w-full h-full object-cover"
         />
-        {/* Overlay oscuro en la imagen */}
-        <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 to-transparent"></div>
-        
+        {/* Overlay en la imagen */}
+        <div className="absolute inset-0 bg-gray-900/60"></div>
+
         {/* Botón volver atrás */}
-        <button 
-          onClick={() => navegar(-1)}
-          className="absolute top-6 left-6 bg-white/20 backdrop-blur-md text-white p-3 rounded-full hover:bg-white/40 transition-colors"
+        <button
+          onClick={function () { navegar(-1); }}
+          className="absolute top-6 left-6 bg-white/20 dark:bg-black/20 text-white p-2.5 rounded-md hover:bg-white/30 dark:hover:bg-black/40 transition-colors border border-white/30 dark:border-white/10"
         >
-          <ArrowLeft size={24} />
+          <ArrowLeft size={20} />
         </button>
-        
+
+
         {/* Título en la imagen */}
-        <div className="absolute bottom-6 left-6 right-6 md:left-20 max-w-4xl">
-          <span className="bg-green-500 text-white px-4 py-1.5 rounded-full text-sm font-bold shadow-lg mb-4 inline-block">
-            Usa tu: {receta.ingredienteClave}
-          </span>
-          <h1 className="text-4xl md:text-5xl font-extrabold text-white tracking-tight">
+        <div className="absolute bottom-8 left-6 right-6 md:left-12 max-w-4xl">
+          <h1 className="text-3xl md:text-4xl font-bold text-white">
             {receta.titulo}
           </h1>
         </div>
       </div>
 
       {/* Contenido principal */}
-      <div className="max-w-4xl mx-auto px-6 mt-8 grid grid-cols-1 md:grid-cols-3 gap-10">
-        
-        {/* Columna izquierda: ingredientes y detalles */}
-        <div className="md:col-span-1 space-y-8">
-          {/* Tarjeta de detalles rápidos */}
-          <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex gap-4 justify-around text-gray-500">
+      <div className="max-w-4xl mx-auto px-4 md:px-6 mt-6 grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+
+        <div className="md:col-span-1 space-y-6">
+
+          <div className="bg-white dark:bg-gray-900 p-5 rounded-lg shadow-sm border border-gray-200 dark:border-gray-800 flex gap-4 justify-around text-gray-600 dark:text-gray-400">
+
             {/* Tiempo */}
             <div className="text-center">
-              <Clock className="mx-auto mb-1 text-gray-400" size={24} />
+              <Clock className="mx-auto mb-1 text-gray-400 dark:text-gray-600" size={20} />
               <span className="text-sm font-medium">{receta.tiempo}</span>
             </div>
             {/* Dificultad */}
             <div className="text-center">
-              <Flame className="mx-auto mb-1 text-orange-400" size={24} />
+              <Flame className="mx-auto mb-1 text-orange-500 dark:text-orange-400" size={20} />
               <span className="text-sm font-medium">{receta.dificultad}</span>
             </div>
             {/* Raciones */}
             <div className="text-center">
-              <UtensilsCrossed className="mx-auto mb-1 text-gray-400" size={24} />
-              <span className="text-sm font-medium">{receta.raciones} pax</span>
+              <UtensilsCrossed className="mx-auto mb-1 text-gray-400 dark:text-gray-600" size={20} />
+              <span className="text-sm font-medium">2 pax</span>
             </div>
           </div>
 
           {/* Lista de ingredientes */}
-          <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
-            <h3 className="text-xl font-bold text-gray-800 mb-6">Ingredientes</h3>
-            <ul className="space-y-4">
-              {receta.ingredientes.map((ing, idx) => (
-                <li key={idx} className="flex justify-between items-center border-b border-gray-50 pb-2 last:border-0">
-                  {/* Icono si lo tenemos o no */}
-                  <div className="flex items-center gap-2">
-                    {ing.enDespensa ? (
-                      <CheckCircle2 size={18} className={ing.critico ? "text-orange-500" : "text-green-500"} />
-                    ) : (
-                      <div className="w-[18px] h-[18px] border-2 border-gray-300 rounded-full"></div>
-                    )}
-                    <span className={`text-sm ${ing.enDespensa ? 'text-gray-800 font-medium' : 'text-gray-400'}`}>
-                      {ing.nombre}
+          <div className="bg-white dark:bg-gray-900 p-5 rounded-lg shadow-sm border border-gray-200 dark:border-gray-800">
+            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 border-b border-gray-100 dark:border-gray-800 pb-2">Ingredientes</h3>
+            <ul className="space-y-3">
+              {receta.ingredientes.map(function (ingrediente, indice) {
+                return (
+                  <li key={indice} className="flex gap-2 items-start text-sm">
+                    <CheckCircle2 size={16} className="text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
+                    <span className="text-gray-800 dark:text-gray-200">
+                      {ingrediente}
                     </span>
-                  </div>
-                  {/* Cantidad del ingrediente */}
-                  <span className="text-sm text-gray-500">{ing.cantidad}</span>
-                </li>
-              ))}
+                  </li>
+                );
+              })}
             </ul>
           </div>
+
         </div>
 
-        {/* Columna derecha: pasos de la receta */}
+        {/* Pasos de la receta */}
         <div className="md:col-span-2">
-          <div className="bg-white p-8 md:p-10 rounded-3xl shadow-sm border border-gray-100">
-            <h3 className="text-2xl font-bold text-gray-800 mb-8">Instrucciones</h3>
-            <div className="space-y-8">
-              {receta.pasos.map((paso, index) => (
-                <div key={index} className="flex gap-6 group">
-                  {/* Número del paso */}
-                  <div className="flex-shrink-0 w-10 h-10 bg-green-50 text-green-600 rounded-2xl flex items-center justify-center font-bold text-lg group-hover:bg-green-600 group-hover:text-white transition-colors shadow-sm">
-                    {index + 1}
+          <div className="bg-white dark:bg-gray-900 p-6 md:p-8 rounded-lg shadow-sm border border-gray-200 dark:border-gray-800">
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6 border-b border-gray-100 dark:border-gray-800 pb-2">Instrucciones</h3>
+            <div className="space-y-6">
+              {listaPasos.map(function (paso, index) {
+                return (
+                  <div key={index} className="flex gap-4">
+                    <div className="flex-shrink-0 w-8 h-8 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-md flex items-center justify-center font-bold text-sm">
+                      {index + 1}
+                    </div>
+                    <p className="text-gray-700 dark:text-gray-300 leading-relaxed pt-0.5 text-base">
+                      {paso.trim()}
+                    </p>
                   </div>
-                  {/* Descripción del paso */}
-                  <p className="text-gray-600 leading-relaxed pt-1.5">
-                    {paso}
-                  </p>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>
 
+
       </div>
     </div>
   );
-};
+}
 
 export default DetalleReceta;
