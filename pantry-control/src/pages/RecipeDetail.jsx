@@ -26,9 +26,6 @@ function DetalleReceta() {
     cargar();
   }, [id]);
 
-  if (cargando) {
-    return <div className="p-20 text-center">Cargando receta...</div>;
-  }
 
   if (!receta) {
     return <div className="p-20 text-center">No se ha encontrado la receta.</div>;

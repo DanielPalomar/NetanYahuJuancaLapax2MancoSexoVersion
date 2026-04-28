@@ -194,7 +194,7 @@ function AñadirProducto() {
                   disabled={buscandoManual || !datos.codigoBarras}
                   className="absolute right-3 top-3 bottom-3 px-5 bg-white dark:bg-gray-700 text-green-600 dark:text-green-400 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-600 font-bold hover:bg-green-50 dark:hover:bg-gray-600 transition-colors flex items-center gap-2 disabled:opacity-30"
                 >
-                  {buscandoManual ? <div className="w-4 h-4 border-2 border-green-500 border-t-transparent rounded-full animate-spin" /> : <Search size={18} />}
+                  <Search size={18} />
                   <span>Buscar</span>
                 </button>
 
@@ -250,7 +250,7 @@ function AñadirProducto() {
             disabled={cargando}
             className="w-full py-6 bg-gray-900 dark:bg-white text-white dark:text-black rounded-[28px] font-black text-xl shadow-2xl shadow-gray-200 dark:shadow-none hover:bg-black dark:hover:bg-gray-100 transition-all transform active:scale-95 flex items-center justify-center gap-4 disabled:opacity-50"
           >
-            {cargando ? "Guardando..." : <><Save size={24} /> Registrar en Despensa</>}
+            <><Save size={24} /> Registrar en Despensa</>
           </button>
 
         </form>

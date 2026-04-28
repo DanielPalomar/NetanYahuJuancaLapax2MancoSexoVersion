@@ -40,13 +40,8 @@ function Recetas() {
 
       {/* Listado de Recetas */}
       <div className="max-w-5xl mx-auto px-6">
-        {cargando ? (
-          <div className="flex flex-col items-center py-20">
-            <Loader2 className="animate-spin text-gray-200" size={40} />
-          </div>
-        ) : (
-          <>
-            {recetas.length > 0 ? (
+        <>
+          {recetas.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-16">
                 {recetas.map(r => (
                   <Link key={r.id} to={`/recetas/${r.id}`} className="block transition-transform hover:-translate-y-2">
@@ -62,11 +57,10 @@ function Recetas() {
               </div>
             )}
           </>
-        )}
       </div>
 
       {/* Nota final */}
-      {!cargando && recetas.length > 0 && (
+      {recetas.length > 0 && (
         <div className="max-w-5xl mx-auto px-6 mt-32 border-t border-gray-50 dark:border-gray-800 pt-10">
           <p className="text-gray-400 dark:text-gray-600 italic text-sm text-center">
             "Cocinar con lo que ya tienes es el primer paso para una vida más sostenible."

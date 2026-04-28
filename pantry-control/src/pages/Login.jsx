@@ -48,11 +48,6 @@ function Ingreso() {
   let textoBoton = 'Iniciar Sesión';
   let iconoFlecha = <ArrowRight size={18} />;
 
-  if (cargando) {
-    textoBoton = 'Iniciando...';
-    iconoFlecha = null;
-  }
-
   return (
     <div className="min-h-[calc(100vh-64px)] flex items-center justify-center p-4 md:p-6 transition-colors">
       <div className="bg-white dark:bg-gray-900 max-w-md w-full rounded-lg shadow-sm border border-gray-200 dark:border-gray-800 p-6 md:p-8">

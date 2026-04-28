@@ -43,10 +43,6 @@ function Registro() {
   let textoBoton = 'Registrarse';
   let iconoFlecha = <ArrowRight size={18} />;
 
-  if (cargando) {
-    textoBoton = 'Registrando...';
-    iconoFlecha = null;
-  }
 
   return (
     <div className="min-h-[calc(100vh-64px)] flex items-center justify-center p-4 md:p-6 transition-colors">

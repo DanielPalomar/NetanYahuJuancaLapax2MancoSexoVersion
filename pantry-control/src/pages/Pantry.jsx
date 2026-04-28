@@ -83,13 +83,8 @@ function Despensa() {
       </div>
 
       <div className="max-w-5xl mx-auto px-6">
-        {cargando ? (
-          <div className="flex flex-col items-center py-20">
-            <Loader2 className="animate-spin text-gray-200" size={40} />
-          </div>
-        ) : (
-          <>
-            {filtrados.length > 0 ? (
+        <>
+          {filtrados.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
                 {filtrados.map(p => (
                   <ProductCard
@@ -109,7 +104,6 @@ function Despensa() {
 
             )}
           </>
-        )}
       </div>
     </div>
   );

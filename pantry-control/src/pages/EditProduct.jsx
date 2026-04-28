@@ -61,18 +61,6 @@ function EditarProducto() {
     }
   }
 
-  // Pantalla de carga
-  if (cargando) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[#fffdfa]">
-        <div className="flex flex-col items-center gap-4">
-          <Loader2 className="animate-spin text-green-500" size={48} />
-          <p className="text-gray-400 font-bold italic animate-pulse text-sm uppercase tracking-widest">Recuperando detalles...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen p-6 md:p-12 flex flex-col items-center transition-colors">
 
@@ -167,7 +155,7 @@ function EditarProducto() {
             disabled={guardando}
             className="w-full py-6 bg-gray-900 dark:bg-white text-white dark:text-black rounded-[28px] font-black text-xl shadow-2xl shadow-gray-100 dark:shadow-none hover:bg-black dark:hover:bg-gray-100 transition-all transform active:scale-95 flex items-center justify-center gap-4 disabled:opacity-50"
           >
-            {guardando ? 'Guardando cambios...' : <><Save size={24} /> Actualizar Producto</>}
+            <><Save size={24} /> Actualizar Producto</>
           </button>
 
         </form>

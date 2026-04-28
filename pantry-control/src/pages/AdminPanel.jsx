@@ -172,16 +172,6 @@ function AdminPanel() {
                   </thead>
                   <tbody className="divide-y divide-gray-200">
                     {function () {
-                      if (cargando) {
-                        return (
-                          <tr>
-                            <td colSpan="5" className="px-6 py-8 text-center text-gray-500">
-                              Cargando usuarios...
-                            </td>
-                          </tr>
-                        );
-                      }
-
                       if (usuarios.length === 0) {
                         return (
                           <tr>
