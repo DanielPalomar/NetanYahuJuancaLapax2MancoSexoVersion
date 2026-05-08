@@ -45,7 +45,7 @@ public class Product {
     @Size(max = 255, message = "{Size.product.brand}")
     private String brand;   
 
-    private float weight;
+    private int cantidad;
 
     private String url_image;
 
@@ -91,8 +91,10 @@ public class Product {
     public void setUser(User user) {        this.user = user;    }
 
 
-    public float getWeight() {        return weight;    }
-    public void setWeight(float weight) {        this.weight = weight;    }
+
+
+    public int getCantidad() {        return cantidad;    }
+    public void setCantidad(int cantidad) {        this.cantidad = cantidad;    }
 
     public java.time.LocalDate getExpirationDate() { return expirationDate; }
     public void setExpirationDate(java.time.LocalDate expirationDate) { this.expirationDate = expirationDate; }

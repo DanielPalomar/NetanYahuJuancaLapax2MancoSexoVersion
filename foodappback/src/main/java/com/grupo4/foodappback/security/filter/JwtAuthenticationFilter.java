@@ -24,7 +24,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import tools.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /*
  * FILTRO DE  -- AUTENTICACION --   JWT ->  Se ejecuta cuando Postman hace POST /login
@@ -130,10 +130,10 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         */
         // Generar el token:
         String token = Jwts.builder()
-                .setSubject(username)
-                .setClaims(claims)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 3600000))
+                .subject(username)
+                .claims(claims)
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + 3600000))
                 .signWith(SECRET_KEY)
                 .compact();
 

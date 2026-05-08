@@ -1,116 +1,80 @@
 package com.grupo4.foodappback.services;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.util.UriComponentsBuilder;
 
-import com.grupo4.foodappback.dto.TranslationResponse;
+import java.util.List;
+import java.util.ArrayList;
 
+/**
+ * SERVICIO DE TRADUCCIÓN
+ * Utiliza la API gratuita de Google Translate para localizar contenidos.
+ */
 @Service
 public class TranslationService {
 
     private final WebClient webClient;
 
     public TranslationService(WebClient.Builder builder) {
-        this.webClient = builder
-                .baseUrl("https://api.mymemory.translated.net")
-                .build();
+        this.webClient = builder.build();
     }
 
-    // ======================
-    // CACHE (nivel básico pro)
-    // ======================
-    private final Map<String, String> cache = new ConcurrentHashMap<>();
-
-    // ======================
-    // DICCIONARIO LOCAL
-    // ======================
-    private final Map<String, String> dictionary = Map.of(
-            "ternera", "beef",
-            "pollo", "chicken",
-            "cerdo", "pork",
-            "arroz", "rice",
-            "cebolla", "onion",
-            "tomate", "tomato",
-            "ajo", "garlic",
-            "merluza", "hake"
-    );
-
-    // ======================
-    // API PUBLICA
-    // ======================
-    public String toEnglish(String text) {
-        return translate(text, "es", "en");
-    }
-
-    public String toSpanish(String text) {
-        return translate(text, "en", "es");
-    }
-
-    // ======================
-    // CORE TRANSLATION
-    // ======================
-    private String translate(String text, String from, String to) {
-
-        if (text == null || text.isBlank()) {
-            return text;
-        }
-
-        String normalized = text.trim().toLowerCase();
-        String key = from + ":" + to + ":" + normalized;
-
-        // 1. CACHE
-        String cached = cache.get(key);
-        if (cached != null) {
-            return cached;
-        }
-
-        // 2. DICCIONARIO (evita API para palabras simples)
-        if (from.equals("es") && to.equals("en")) {
-            String dictValue = dictionary.get(normalized);
-            if (dictValue != null) {
-                cache.put(key, dictValue);
-                return dictValue;
-            }
-        }
-
-        // 3. API externa (solo si es necesario)
-        String result = callExternalApi(text, from, to);
-
-        cache.put(key, result);
-
-        return result;
-    }
-
-    // ======================
-    // API EXTERNA (controlada)
-    // ======================
-    private String callExternalApi(String text, String from, String to) {
+    /**
+     * Traduce un texto de un idioma a otro.
+     */
+    @SuppressWarnings("unchecked")
+    public String translate(String text, String sourceLang, String targetLang) {
+        if (text == null || text.trim().isEmpty()) return text;
 
         try {
-            TranslationResponse response = webClient.get()
-                    .uri(uriBuilder -> uriBuilder
-                            .path("/get")
-                            .queryParam("q", text)
-                            .queryParam("langpair", from + "|" + to)
-                            .build())
+            // Construimos la URL de forma segura para evitar problemas con caracteres especiales
+            String url = UriComponentsBuilder.fromUriString("https://translate.googleapis.com/translate_a/single")
+                    .queryParam("client", "gtx")
+                    .queryParam("sl", sourceLang)
+                    .queryParam("tl", targetLang)
+                    .queryParam("dt", "t")
+                    .queryParam("q", text)
+                    .build()
+                    .toUriString();
+
+            List<Object> root = webClient.get()
+                    .uri(url)
                     .retrieve()
-                    .bodyToMono(TranslationResponse.class)
+                    .bodyToMono(List.class)
                     .block();
 
-            if (response == null ||
-                response.getResponseData() == null ||
-                response.getResponseData().getTranslatedText() == null) {
-                return text; // fallback seguro
+            if (root != null && !root.isEmpty() && root.get(0) instanceof List) {
+                List<List<Object>> sentences = (List<List<Object>>) root.get(0);
+                StringBuilder result = new StringBuilder();
+                for (List<Object> sentence : sentences) {
+                    if (sentence != null && !sentence.isEmpty()) {
+                        result.append(sentence.get(0).toString());
+                    }
+                }
+                return result.toString();
             }
-
-            return response.getResponseData().getTranslatedText();
-
         } catch (Exception e) {
-            // fallback anti-crash
-            return text;
+            System.err.println("❌ Error en traducción: " + e.getMessage());
         }
+        return text; // Si falla, devolvemos el original
+    }
+
+    /**
+     * Traduce una lista de textos de forma eficiente.
+     */
+    public List<String> translateList(List<String> texts, String sourceLang, String targetLang) {
+        if (texts == null || texts.isEmpty()) return texts;
+        
+        // Unimos con un delimitador único que no suela aparecer en los ingredientes
+        String combined = String.join(" ||| ", texts);
+        String translated = translate(combined, sourceLang, targetLang);
+        
+        String[] split = translated.split(" \\|\\|\\| ");
+        List<String> result = new ArrayList<>();
+        for (String s : split) {
+            result.add(s.trim());
+        }
+        return result;
     }
 }

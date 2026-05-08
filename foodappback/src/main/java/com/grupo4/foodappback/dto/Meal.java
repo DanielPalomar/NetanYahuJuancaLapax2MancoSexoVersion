@@ -18,6 +18,8 @@ public class Meal {
     @JsonAlias("idMeal")
     private String idMeal;
 
+    private java.util.List<String> translatedIngredientes;
+
     @JsonProperty("titulo")
     @JsonAlias("strMeal")
     private String strMeal;
@@ -137,12 +139,19 @@ public class Meal {
     // Método para el frontend en español
     @JsonProperty("ingredientes")
     public java.util.List<String> getIngredientes() {
+        if (translatedIngredientes != null) {
+            return translatedIngredientes;
+        }
         java.util.List<String> lista = new java.util.ArrayList<>();
         Map<String, String> mapa = getIngredientsList();
         for (Map.Entry<String, String> entry : mapa.entrySet()) {
             lista.add(entry.getValue() + " " + entry.getKey());
         }
         return lista;
+    }
+
+    public void setIngredientes(java.util.List<String> ingredientes) {
+        this.translatedIngredientes = ingredientes;
     }
 
     @JsonProperty("tiempo")

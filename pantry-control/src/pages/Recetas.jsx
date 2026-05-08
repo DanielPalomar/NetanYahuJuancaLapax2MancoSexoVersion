@@ -1,72 +1,61 @@
 import { useState, useEffect } from 'react';
-import { Loader2, ChefHat, PackageOpen } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import RecipeCard from '../components/RecipeCard';
-import { serviciosAPI } from '../services/api';
+import { Utensils } from 'lucide-react';
+import TarjetaReceta from '../components/TarjetaReceta';
+import { serviciosAPI } from '../services/servicios';
 
-// RECET(ARIO)卐
+/**
+ * PÁGINA DE RECETAS 
+ */
 function Recetas() {
-  const [recetas, setRecetas] = useState([]);
-  const [cargando, setCargando] = useState(true);
+  let [recetas, setRecetas] = useState([]);
+  let [productos, setProductos] = useState([]);
 
-  // Carga de sugerencias inteligentes según la despensa
-  useEffect(() => {
-    async function cargar() {
-      setCargando(true);
-      try {
-        const datos = await serviciosAPI.obtenerRecetasSugeridas();
-        setRecetas(Array.isArray(datos) ? datos : []);
-      } catch (err) {
-        console.error('Error:', err);
-      } finally {
-        setCargando(false);
-      }
-    }
-    cargar();
+  //promesa en honor a Marco Javier 
+  useEffect(function() {
+    Promise.all([
+      serviciosAPI.obtenerRecetasSugeridas(),
+      serviciosAPI.obtenerDespensa()
+    ]).then(function(resultados) {
+      setRecetas(resultados[0] || []);
+      setProductos(resultados[1] || []);
+    }).catch(function() {
+      console.log('error');
+    });
   }, []);
 
+  let tarjetas = [];
+  for (let i = 0; i < recetas.length; i++) {
+    let r = recetas[i];
+    tarjetas.push(
+      <Link key={r.id} to={'/recetas/' + r.id}>
+        <TarjetaReceta receta={r} productosPantry={productos} />
+      </Link>
+    );
+  }
+
+  let contenido = tarjetas.length > 0 ? (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {tarjetas}
+    </div>
+  ) : (
+    <div className="text-center py-16 bg-white border border-blue-200 rounded">
+      <p className="text-slate-500">No hay recetas</p>
+    </div>
+  );
+
   return (
-    <div className="min-h-screen pb-24 transition-colors">
-
-
-
-      {/* Encabezado*/}
-      <div className="max-w-5xl mx-auto px-6 pt-20 pb-16">
-        <h1 className="text-5xl font-light tracking-tight dark:text-white">¿Qué cocinamos hoy?</h1>
-        <p className="text-gray-400 dark:text-gray-500 mt-4 text-xl max-w-2xl">
-          Ideas basadas en los ingredientes que tienes ahora mismo.
-        </p>
-      </div>
-
-      {/* Listado de Recetas */}
-      <div className="max-w-5xl mx-auto px-6">
-        <>
-          {recetas.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-16">
-                {recetas.map(r => (
-                  <Link key={r.id} to={`/recetas/${r.id}`} className="block transition-transform hover:-translate-y-2">
-                    <RecipeCard receta={r} />
-                  </Link>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-32">
-                <ChefHat size={64} className="mx-auto text-gray-100 dark:text-gray-800 mb-6" />
-                <p className="text-gray-400 dark:text-gray-600 text-xl font-light italic">Tu despensa está esperando ingredientes para darte ideas.</p>
-                <Link to="/despensa" className="text-black dark:text-white font-bold mt-4 inline-block border-b-2 border-black dark:border-white pb-1">Ir a mi despensa</Link>
-              </div>
-            )}
-          </>
-      </div>
-
-      {/* Nota final */}
-      {recetas.length > 0 && (
-        <div className="max-w-5xl mx-auto px-6 mt-32 border-t border-gray-50 dark:border-gray-800 pt-10">
-          <p className="text-gray-400 dark:text-gray-600 italic text-sm text-center">
-            "Cocinar con lo que ya tienes es el primer paso para una vida más sostenible."
-          </p>
+    <div className="pb-24">
+      <div className="py-6 mb-6 border-b border-blue-200 bg-blue-50">
+        <div className="max-w mx-auto px-8">
+          <h1 className="text-4xl font-bold text-blue-900">Recetas</h1>
+          <p className="text-slate-700 text-sm mt-1">Recetas sugeridas con tus ingredientes</p>
         </div>
-      )}
+      </div>
+
+      <div className="max-w mx-auto px-8">
+        {contenido}
+      </div>
     </div>
   );
 }

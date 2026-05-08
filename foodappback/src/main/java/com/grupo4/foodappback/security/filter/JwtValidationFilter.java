@@ -24,7 +24,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import tools.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /*Esta clase es un filtro de seguridad que se ejecuta en cada petición y hace lo siguiente:
 👉 Comprueba si hay un token JWT en la cabecera

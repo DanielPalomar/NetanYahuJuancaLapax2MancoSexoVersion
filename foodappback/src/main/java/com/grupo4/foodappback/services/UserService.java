@@ -28,8 +28,8 @@ public class UserService {
     @Autowired
     IRoleRepository roleRepository;
 
-    /* Codificador de contraseñas (BCrypt normalmente)
-     * La contraseña enviada desde Postman se cifra aquí   */
+    /* Codificador de contraseñas
+     * En este proyecto se usa texto plano para facilitar pruebas. */
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -62,7 +62,7 @@ public class UserService {
        
         user.setRoles(roles);
 
-        // Se codifica la contraseña con el encoder que hemos puesto arriba. NUNCA se debe guardar en texto plano.
+        // Se guarda la contraseña tal cual (texto plano) usando el NoOpPasswordEncoder.
         if(user.getPassword() != null && !user.getPassword().isBlank()){
             user.setPassword(passwordEncoder.encode(user.getPassword()));
         }

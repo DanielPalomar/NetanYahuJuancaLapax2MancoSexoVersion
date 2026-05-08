@@ -13,7 +13,6 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -47,12 +46,11 @@ public class SpringSecurityConfig {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
-    /* CODIFICADOR DE CONTRASEÑAS: consigue q la contraseña enviada desde Postman:
-     * - Se cifra al guardar
-     * - Se compara cifrada en el login     */
+    /* GESTIÓN DE CONTRASEÑAS:
+     * - Configurado en texto plano para facilitar el desarrollo.     */
     @Bean
     PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        return org.springframework.security.crypto.password.NoOpPasswordEncoder.getInstance();
     }
 
     /* ===========================

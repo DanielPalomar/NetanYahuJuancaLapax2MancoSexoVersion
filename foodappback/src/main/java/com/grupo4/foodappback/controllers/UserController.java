@@ -33,11 +33,20 @@ public class UserController {
 
     @PostMapping("/registrar")
     public ResponseEntity<?> registerUser(@Valid @RequestBody User user, 
-                                        BindingResult result){      
+                                        BindingResult result,
+                                        Authentication authentication){      
         if (result.hasErrors()){
             return validation(result);
         }
-        user.setAdmin(false);
+
+        // Si el que registra NO es admin, forzamos que el nuevo usuario NO sea admin
+        boolean isRequesterAdmin = authentication != null && authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+        
+        if (!isRequesterAdmin) {
+            user.setAdmin(false);
+        }
+
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(userService.registerUser(user));

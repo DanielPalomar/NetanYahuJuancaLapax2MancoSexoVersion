@@ -12,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonAlias;
 
 public class MealResponse {
 
-    @JsonProperty("recetas")
+    @JsonProperty("meals")
     @JsonAlias("meals")
     private List<Meal> meals = new ArrayList<>();
 
