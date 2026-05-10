@@ -55,11 +55,16 @@ function App() {
             <Route path="/registro" element={<Registro />} />
             
             {/* Rutas privadas: se envuelven en RutaPrivada para exigir login */}
-            <Route path="/despensa" element={<RutaPrivada><Despensa /></RutaPrivada>} />
+            {/* <Route path="/despensa" element={<RutaPrivada><Despensa /></RutaPrivada>} />
             <Route path="/añadir" element={<RutaPrivada><AnadirProducto /></RutaPrivada>} />
             <Route path="/editar/:id" element={<RutaPrivada><EditarProducto /></RutaPrivada>} />
             <Route path="/recetas" element={<RutaPrivada><Recetas /></RutaPrivada>} />
-            <Route path="/recetas/:id" element={<RutaPrivada><DetalleReceta /></RutaPrivada>} />
+            <Route path="/recetas/:id" element={<RutaPrivada><DetalleReceta /></RutaPrivada>} /> */}
+            <Route path="/despensa" element={<Despensa />} />
+            <Route path="/añadir" element={<AnadirProducto />} />
+            <Route path="/editar/:id" element={<EditarProducto />} />
+            <Route path="/recetas" element={<Recetas />} />
+            <Route path="/recetas/:id" element={<DetalleReceta />} />
             
             {/* Ruta de admin: también privada */}
             <Route path="/admin" element={<RutaPrivada><PanelAdmin /></RutaPrivada>} />

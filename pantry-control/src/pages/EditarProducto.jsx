@@ -16,8 +16,8 @@ function EditarProducto() {
   let [fechaCaducidad, setFechaCaducidad] = useState('');
   let [cantidad, setCantidad] = useState(1);
 
-  useEffect(function() {
-    serviciosAPI.obtenerDespensa().then(function(productos) {
+  useEffect(function () {
+    serviciosAPI.obtenerDespensa().then(function (productos) {
       for (let i = 0; i < productos.length; i++) {
         if (productos[i].id === parseInt(id)) {
           setNombre(productos[i].nombre);
@@ -28,7 +28,7 @@ function EditarProducto() {
           break;
         }
       }
-    }).catch(function() {
+    }).catch(function () {
       console.log('error');
     });
   }, [id]);
@@ -41,9 +41,9 @@ function EditarProducto() {
       codigoBarras: codigoBarras,
       fechaCaducidad: fechaCaducidad,
       cantidad: cantidad
-    }).then(function() {
+    }).then(function () {
       navigate('/despensa');
-    }).catch(function() {
+    }).catch(function () {
       alert("Error");
     });
   }
@@ -53,75 +53,83 @@ function EditarProducto() {
   }
 
   return (
-    <div className="max-w mx-auto p-8 min-h-screen bg-blue-50">
-      <button onClick={volver} className="text-blue-600 font-semibold mb-6 hover:text-blue-700">
-        Cancelar
-      </button>
+    <div className="min-h-screen bg-emerald-50 pb-24">
+      <div className="max-w-3xl mx-auto px-6 py-10">
+        <button onClick={volver} className="flex items-center gap-2 text-emerald-600/80 font-medium mb-8 hover:text-emerald-900 transition-colors">
+          <ChevronLeft size={20} />
+          <span>Volver a la despensa</span>
+        </button>
 
-      <div className="bg-white p-6 border border-blue-200 rounded">
-        <h2 className="text-3xl font-bold text-blue-900 mb-4">Editar Producto</h2>
-
-        <form onSubmit={manejarGuardar} className="space-y-4">
-          <div>
-            <label className="block font-semibold text-slate-700 mb-1">Nombre</label>
-            <input
-              type="text" required
-              className="w-full px-4 py-2 border border-blue-200 rounded focus:outline-none focus:border-blue-500"
-              value={nombre}
-              onChange={function(e) { setNombre(e.target.value); }}
-            />
+        <div className="bg-white p-8 md:p-10 border border-emerald-100 shadow-sm rounded-3xl">
+          <div className="mb-8">
+            <h2 className="text-3xl font-bold text-emerald-950 tracking-tight">Editar Producto</h2>
+            <p className="text-emerald-700/80 mt-2">Modifica los detalles de este producto en tu inventario.</p>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <form onSubmit={manejarGuardar} className="space-y-6">
             <div>
-              <label className="block font-semibold text-slate-700 mb-1">Código</label>
+              <label className="block text-sm font-medium text-emerald-900 mb-2">Nombre del producto</label>
               <input
-                type="text"
-                className="w-full px-4 py-2 border border-blue-200 rounded focus:outline-none focus:border-blue-500"
-                value={codigoBarras}
-                onChange={function(e) { setCodigoBarras(e.target.value); }}
+                type="text" required
+                className="w-full px-4 py-3 bg-emerald-50/50 border border-emerald-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors"
+                value={nombre}
+                onChange={function (e) { setNombre(e.target.value); }}
               />
             </div>
-            <div>
-              <label className="block font-semibold text-slate-700 mb-1">Cantidad</label>
-              <input
-                type="number"
-                min="1"
-                className="w-full px-4 py-2 border border-blue-200 rounded focus:outline-none focus:border-blue-500"
-                value={cantidad}
-                onChange={function(e) { setCantidad(e.target.value); }}
-              />
-            </div>
-          </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block font-semibold text-slate-700 mb-1">Marca</label>
-              <input
-                type="text"
-                className="w-full px-4 py-2 border border-blue-200 rounded focus:outline-none focus:border-blue-500"
-                value={marca}
-                onChange={function(e) { setMarca(e.target.value); }}
-              />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-emerald-900 mb-2">Código de barras</label>
+                <input
+                  type="text"
+                  className="w-full px-4 py-3 bg-emerald-50/50 border border-emerald-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors"
+                  value={codigoBarras}
+                  onChange={function (e) { setCodigoBarras(e.target.value); }}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-emerald-900 mb-2">Cantidad</label>
+                <input
+                  type="number"
+                  min="1"
+                  className="w-full px-4 py-3 bg-emerald-50/50 border border-emerald-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors"
+                  value={cantidad}
+                  onChange={function (e) { setCantidad(e.target.value); }}
+                />
+              </div>
             </div>
-            <div>
-              <label className="block font-semibold text-slate-700 mb-1">Vence el día</label>
-              <input
-                type="date" required
-                className="w-full px-4 py-2 border border-blue-200 rounded focus:outline-none focus:border-blue-500"
-                value={fechaCaducidad}
-                onChange={function(e) { setFechaCaducidad(e.target.value); }}
-              />
-            </div>
-          </div>
 
-          <button
-            type="submit"
-            className="w-full bg-blue-600 text-white font-semibold py-2 rounded hover:bg-blue-700 mt-6"
-          >
-            Guardar
-          </button>
-        </form>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-emerald-900 mb-2">Marca</label>
+                <input
+                  type="text"
+                  className="w-full px-4 py-3 bg-emerald-50/50 border border-emerald-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors"
+                  value={marca}
+                  onChange={function (e) { setMarca(e.target.value); }}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-emerald-900 mb-2">Fecha de caducidad</label>
+                <input
+                  type="date" required
+                  className="w-full px-4 py-3 bg-emerald-50/50 border border-emerald-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors"
+                  value={fechaCaducidad}
+                  onChange={function (e) { setFechaCaducidad(e.target.value); }}
+                />
+              </div>
+            </div>
+
+            <div className="pt-4 mt-8 border-t border-emerald-100">
+              <button
+                type="submit"
+                className="w-full bg-emerald-600 text-white font-semibold py-3.5 rounded-xl hover:bg-emerald-700 transition-colors shadow-sm shadow-emerald-200"
+              >
+                Guardar Cambios
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );

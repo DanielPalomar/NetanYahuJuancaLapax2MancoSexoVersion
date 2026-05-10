@@ -65,9 +65,9 @@ function DetalleReceta() {
     let ingr = ingredientes[m];
     let falta = esFaltante(ingr);
     listaIngJSX.push(
-      <li key={m} className="flex items-center justify-between p-2 border-b border-blue-200">
-        <span className={falta ? "text-slate-400" : "text-slate-800"}>{ingr}</span>
-        {falta && <span className="text-sm text-red-600">Falta</span>}
+      <li key={m} className="flex items-center justify-between p-3 border-b border-emerald-50 last:border-0 hover:bg-emerald-50/50 transition-colors rounded-lg">
+        <span className={falta ? "text-emerald-400 line-through" : "text-emerald-900 font-medium"}>{ingr}</span>
+        {falta && <span className="text-xs font-bold text-red-500 bg-red-50 px-2 py-1 rounded-full">Falta</span>}
       </li>
     );
   }
@@ -75,38 +75,57 @@ function DetalleReceta() {
   let listaPasosJSX = [];
   for (let n = 0; n < listaPasos.length; n++) {
     listaPasosJSX.push(
-      <div key={n} className="flex gap-4 mb-4">
-        <div className="bg-blue-600 text-white w-8 h-8 flex items-center justify-center font-bold flex-shrink-0 rounded">{n + 1}</div>
-        <p className="text-slate-700">{listaPasos[n].trim()}</p>
+      <div key={n} className="flex gap-4 mb-6">
+        <div className="bg-emerald-600 text-white w-8 h-8 flex items-center justify-center font-bold flex-shrink-0 rounded-full shadow-sm">{n + 1}</div>
+        <p className="text-emerald-800 leading-relaxed pt-1">{listaPasos[n].trim()}</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-blue-50 pb-24">
-      <div className="max-w mx-auto px-6 py-6">
-        <button onClick={volver} className="text-blue-600 font-semibold mb-6 hover:text-blue-700">
-          Volver
+    <div className="min-h-screen bg-emerald-50 pb-24">
+      <div className="max-w-4xl mx-auto px-6 py-10">
+        <button onClick={volver} className="flex items-center gap-2 text-emerald-600/80 font-medium mb-8 hover:text-emerald-900 transition-colors">
+          <ArrowLeft size={20} />
+          <span>Volver a recetas</span>
         </button>
-        <div className="bg-white border border-blue-200 rounded-lg overflow-hidden">
+        
+        <div className="bg-white border border-emerald-100 rounded-[2rem] shadow-sm overflow-hidden">
           {receta.imagen && (
-            <div className="w-full h-48">
+            <div className="w-full h-64 md:h-80 relative">
               <img src={receta.imagen} alt={receta.titulo} className="w-full h-full object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+              <h1 className="absolute bottom-6 left-6 text-3xl md:text-4xl font-bold text-white tracking-tight drop-shadow-md">{receta.titulo}</h1>
             </div>
           )}
-          <div className="p-6">
-            <h1 className="text-3xl font-bold text-blue-900 mb-4">{receta.titulo}</h1>
-            <div className="flex gap-6 mb-6 pb-6 border-b border-blue-200 text-sm text-slate-600">
-              <span>{receta.tiempo || 'N/A'}</span>
-              <span>{receta.dificultad || 'N/A'}</span>
+          
+          <div className="p-8 md:p-10">
+            {!receta.imagen && (
+              <h1 className="text-3xl md:text-4xl font-bold text-emerald-950 mb-6 tracking-tight">{receta.titulo}</h1>
+            )}
+            
+            <div className="flex gap-6 mb-8 pb-8 border-b border-emerald-100 text-sm font-medium text-emerald-700/80">
+              <div className="flex items-center gap-2">
+                <Clock size={18} className="text-emerald-400" />
+                <span>{receta.tiempo || 'Tiempo no especificado'}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <BarChart size={18} className="text-emerald-400" />
+                <span>{receta.dificultad || 'Dificultad no especificada'}</span>
+              </div>
             </div>
-            <div className="grid md:grid-cols-3 gap-6">
-              <div>
-                <h3 className="font-bold text-blue-900 mb-3">Ingredientes</h3>
+
+            <div className="grid md:grid-cols-3 gap-10">
+              <div className="md:col-span-1">
+                <div className="flex items-center gap-2 mb-4">
+                  <ListCheck size={20} className="text-emerald-700" />
+                  <h3 className="text-xl font-bold text-emerald-950">Ingredientes</h3>
+                </div>
                 <ul className="space-y-1">{listaIngJSX}</ul>
               </div>
+              
               <div className="md:col-span-2">
-                <h3 className="font-bold text-blue-900 mb-3">Pasos</h3>
+                <h3 className="text-xl font-bold text-emerald-950 mb-6">Instrucciones</h3>
                 <div>{listaPasosJSX}</div>
               </div>
             </div>

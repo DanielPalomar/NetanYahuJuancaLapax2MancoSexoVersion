@@ -4,32 +4,26 @@ import { Search, Plus, Package } from 'lucide-react';
 import TarjetaProducto from '../components/TarjetaProducto';
 import { serviciosAPI } from '../services/servicios';
 
-/**
- * PÁGINA DE DESPENSA "CRAFT" 
- */
 function Despensa() {
   let navegar = useNavigate();
   let [productos, setProductos] = useState([]);
   let [busqueda, setBusqueda] = useState("");
 
-  useEffect(function() {
-    serviciosAPI.obtenerDespensa().then(function(datos) {
+  useEffect(function () {
+    serviciosAPI.obtenerDespensa().then(function (datos) {
       if (datos) setProductos(datos);
-    }).catch(function() {
-      console.log('error');
+    }).catch(function () {
+      console.log('error al cargar las cosillas');
     });
   }, []);
 
   function manejarEliminar(id) {
-    if (!window.confirm("¿Eliminar?")) return;
-    serviciosAPI.eliminarProducto(id).then(function() {
-      let lista = [];
-      for (let i = 0; i < productos.length; i++) {
-        if (productos[i].id !== id) lista.push(productos[i]);
-      }
+    if (!window.confirm("¿Eliminar este producto?")) return;
+    serviciosAPI.eliminarProducto(id).then(function () {
+      let lista = productos.filter(p => p.id !== id);
       setProductos(lista);
-    }).catch(function() {
-      alert("Error");
+    }).catch(function () {
+      alert("Error al eliminar");
     });
   }
 
@@ -37,82 +31,82 @@ function Despensa() {
     setBusqueda(e.target.value);
   }
 
-  let filtrados = [];
-  for (let i = 0; i < productos.length; i++) {
-    let prod = productos[i];
+  // --- LÓGICA DE FILTRADO ---
+  let filtrados = productos.filter(prod => {
     let nom = prod.nombre ? prod.nombre.toLowerCase() : '';
-    let bus = busqueda.toLowerCase();
-    if (nom.includes(bus)) filtrados.push(prod);
-  }
+    return nom.includes(busqueda.toLowerCase());
+  });
 
-  filtrados.sort(function(a, b) {
+  // LÓGICA DE ORDENACIÓN (el mas cerca a cadaucar primero)
+  filtrados.sort(function (a, b) {
     if (!a.fechaCaducidad && !b.fechaCaducidad) return 0;
     if (!a.fechaCaducidad) return 1;
     if (!b.fechaCaducidad) return -1;
-    let dateA = new Date(a.fechaCaducidad);
-    let dateB = new Date(b.fechaCaducidad);
-    if (dateA < dateB) return -1;
-    if (dateA > dateB) return 1;
-    return 0;
+    return new Date(a.fechaCaducidad) - new Date(b.fechaCaducidad);
   });
 
-  let tarjetas = [];
-  for (let i = 0; i < filtrados.length; i++) {
-    let p = filtrados[i];
-    let pid = p.id;
-    tarjetas.push(
-      <TarjetaProducto
-        key={p.id}
-        producto={p}
-        alEditar={function() { navegar('/editar/' + pid); }}
-        alEliminar={function() { manejarEliminar(pid); }}
-      />
-    );
-  }
-
-  let contenidoPrincipal = null;
-  if (tarjetas.length > 0) {
-    contenidoPrincipal = (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        {tarjetas}
-      </div>
-    );
-  } else {
-    contenidoPrincipal = (
-      <div className="text-center py-16 bg-white border border-blue-200 rounded">
-        <p className="text-slate-500">Sin productos</p>
-      </div>
-    );
-  }
-
   return (
-    <div className="pb-24">
-      <div className="py-6 mb-6 bg-blue-50 border-b border-blue-200">
-        <div className="max-w  mx-auto px-8 flex flex-col md:flex-row justify-between items-end gap-6">
-          <div>
-            <h1 className="text-4xl font-bold text-blue-900">Mis Productos</h1>
-            <p className="text-slate-700 text-sm mt-1">Aprovecha todo lo que tengas</p>
-          </div>
-          <Link to="/añadir" className="bg-blue-600 text-white py-2 px-6 font-semibold rounded hover:bg-blue-700">
-            añadir un nuevo articulo
+    <div className="min-h-screen bg-emerald-50 pb-24">
+
+      {/* CABECERA CENTRADA */}
+      <div className="bg-white border-b border-emerald-100 shadow-sm py-12 mb-12 w-full flex justify-center">
+        <div className="w-full max-w-6xl px-6 flex flex-col items-center text-center">
+          <h1 className="text-4xl md:text-6xl font-extrabold text-emerald-950 mb-4 tracking-tight w-full">
+            Mi Despensa
+          </h1>
+          <p className="text-emerald-700/80 text-xl mb-10 w-full">
+            Gestiona tus alimentos y evita el desperdicio
+          </p>
+
+          <Link
+            to="/añadir"
+            className="inline-flex items-center gap-3 bg-emerald-600 text-white py-4 px-12 rounded-2xl font-bold text-xl hover:bg-emerald-700 transition-colors shadow-sm shadow-emerald-200"
+          >
+            <Plus size={26} strokeWidth={3} />
+            Añadir Producto
           </Link>
         </div>
       </div>
 
-      <div className="max-w mx-auto px-8">
-        <div className="flex flex-col md:flex-row justify-between items-center gap-6 mb-6">
-          <input
-            type="text"
-            placeholder="Buscar ingredientes..."
-            className="flex-1 px-4 py-2 border border-blue-200 rounded focus:outline-none focus:border-blue-500"
-            value={busqueda}
-            onChange={cambiarBusqueda}
-          />
-          <div className="text-sm text-slate-600">
-            {productos.length} productos
+      {/* CUERPO PRINCIPAL*/}
+      <div className="max-w-6xl mx-auto px-6 md:px-8">
+
+        {/* BUSCADOR*/}
+        <div className="max-w-3xl mx-auto mb-16">
+          <div className="relative group">
+            <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-emerald-400 group-focus-within:text-emerald-700 transition-colors" size={24} />
+            <input
+              type="text"
+              placeholder="Buscar ingredientes..."
+              className="w-full pl-16 pr-8 py-5 bg-white border border-emerald-200 rounded-[2.5rem] focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors shadow-sm text-xl"
+              value={busqueda}
+              onChange={cambiarBusqueda}
+            />
+          </div>
+          <div className="text-center mt-6 text-emerald-600 font-bold uppercase tracking-widest text-xs">
+            Tienes {filtrados.length} artículos en la lista
           </div>
         </div>
-        {contenidoPrincipal}
+
+        {/* LISTADO DE PRODUCTOS */}
+        {filtrados.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            {filtrados.map(p => (
+              <TarjetaProducto
+                key={p.id}
+                producto={p}
+                alEditar={() => navegar('/editar/' + p.id)}
+                alEliminar={() => manejarEliminar(p.id)}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="max-w-2xl mx-auto text-center py-24 bg-white border border-dashed border-emerald-200 rounded-[3rem] shadow-sm">
+            <Package className="mx-auto text-emerald-300 mb-6" size={80} />
+            <h3 className="text-2xl font-bold text-emerald-900 mb-3">¿Vaciando la cocina?</h3>
+            <p className="text-emerald-700/80 text-lg">No hay productos que coincidan con tu búsqueda.</p>
+          </div>
+        )}
       </div>
     </div>
   );
