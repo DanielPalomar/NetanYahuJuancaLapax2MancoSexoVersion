@@ -11,13 +11,15 @@ function PanelAdmin() {
   let [nuevaContraseña, setNuevaContraseña] = useState('');
   let [nuevoEsAdmin, setNuevoEsAdmin] = useState(false);
 
-  useEffect(function() {
-    serviciosAPI.obtenerUsuariosAdmin().then(function(data) {
+ useEffect(() => {
+  serviciosAPI.obtenerUsuariosAdmin()
+    .then((data) => {
       setUsuarios(data || []);
-    }).catch(function() {
-      console.log('error');
+    })
+    .catch((err) => {
+      console.error("Error al obtener usuarios administradores:", err);
     });
-  }, []);
+}, []);
 
   function agregarUsuario(e) {
     e.preventDefault();

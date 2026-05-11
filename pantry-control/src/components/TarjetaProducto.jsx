@@ -1,26 +1,58 @@
+import { Pencil, Trash2, Store } from 'lucide-react';
+
 function TarjetaProducto(props) {
-  let { producto, alEditar, alEliminar } = props;
-  let esVencido = producto.fechaCaducidad && new Date(producto.fechaCaducidad) < new Date();
+  // 1. Escudo de seguridad: si no hay producto, no renderizamos nada
+  if (!props.producto) return null;
+
+  const p = props.producto;
 
   return (
-    <div className={`p-6 border rounded-2xl transition-all shadow-sm hover:shadow-md ${esVencido ? 'bg-emerald-50/50 border-emerald-100 opacity-70' : 'bg-white border-emerald-100 hover:-translate-y-1 hover:border-emerald-200'}`}>
-      <div className="flex justify-between items-start mb-4">
-        <div className="pr-4">
-          {producto.marca && <p className="text-xs font-semibold uppercase tracking-wider text-emerald-600/70 mb-1.5">{producto.marca}</p>}
-          <h3 className={`text-xl font-bold leading-tight ${esVencido ? 'line-through text-emerald-600/60' : 'text-emerald-950'}`}>
-            {producto.nombre}
-          </h3>
+    <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm hover:shadow-md transition-shadow h-full flex flex-col justify-between relative">
+      
+      <div>
+        {/* Cabecera: Súper y Cantidad */}
+        <div className="flex justify-between items-start mb-4">
+          <div className="flex items-center gap-1.5 text-[#22c55e] bg-emerald-50 px-2 py-1 rounded-md">
+            <Store size={14} />
+            <span className="text-xs font-bold uppercase tracking-wider">
+              {p.supermercado || 'General'}
+            </span>
+          </div>
+          
+          <div className="flex flex-col items-center">
+            <span className="text-[10px] font-black text-gray-400 uppercase">Cant.</span>
+            <span className="text-xl font-black text-emerald-600 leading-none">
+              {p.cantidad || 1}
+            </span>
+          </div>
         </div>
-        <span className="bg-emerald-600 text-white px-3 py-1.5 text-sm font-bold rounded-xl shadow-sm">{producto.cantidad}</span>
+
+        {/* Nombre y Fecha */}
+        <h3 className="text-xl font-bold text-gray-800 mb-1 capitalize">
+          {p.nombre || 'Producto'}
+        </h3>
+        <p className="text-sm text-gray-500 font-medium italic">
+          {p.fechaCaducidad || 'Sin fecha'}
+        </p>
       </div>
-      <div className="border-t border-emerald-50 pt-4 flex justify-between items-center mt-2">
-        <span className={`text-sm font-medium ${esVencido ? 'text-red-500 line-through' : 'text-emerald-700/80'}`}>
-          {producto.fechaCaducidad ? `Vence: ${producto.fechaCaducidad}` : 'Sin fecha'}
-        </span>
-        <div className="flex gap-3">
-          <button onClick={alEditar} className="text-emerald-700 font-semibold hover:text-emerald-900 transition-colors text-sm bg-emerald-50 px-3 py-1.5 rounded-lg hover:bg-emerald-100">Editar</button>
-          <button onClick={alEliminar} className="text-red-500 font-semibold hover:text-white transition-colors text-sm hover:bg-red-500 px-3 py-1.5 rounded-lg">Eliminar</button>
-        </div>
+
+      {/* Botones: Asegúrate de que NO haya ningún <Link> o <a> envolviendo esto */}
+      <div className="flex justify-between mt-6 pt-4 border-t border-gray-50">
+        <button
+          type="button"
+          onClick={props.alEditar}
+          className="flex items-center gap-1.5 text-emerald-600 hover:text-emerald-700 font-bold text-sm"
+        >
+          <Pencil size={16} /> Editar
+        </button>
+
+        <button
+          type="button"
+          onClick={props.alEliminar}
+          className="flex items-center gap-1.5 text-red-500 hover:text-red-600 font-bold text-sm"
+        >
+          <Trash2 size={16} /> Eliminar
+        </button>
       </div>
     </div>
   );

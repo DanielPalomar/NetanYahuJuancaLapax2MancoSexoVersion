@@ -38,7 +38,7 @@ function Ingreso() {
             <input
               type="text" required
               placeholder="Tu usuario"
-              className="w-full px-4 py-3 bg-emerald-50/50 border border-emerald-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors"
+              className="w-full px-4 py-3 bg-[oklch(95% 0.052 163.051)] border border-emerald-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors"
               value={usuario}
               // el focus es para cuando se selecciona algo y le cambia las cositas 
               onChange={(e) => setUsuario(e.target.value)}
@@ -49,7 +49,7 @@ function Ingreso() {
             <input
               type="password" required
               placeholder="••••••••"
-              className="w-full px-4 py-3 bg-emerald-50/50 border border-emerald-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors"
+              className="w-full px-4 py-3 bg-[oklch(95% 0.052 163.051)] border border-emerald-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors"
               value={contraseña}
               onChange={(e) => setContraseña(e.target.value)}
             />

@@ -22,7 +22,7 @@ function BarraNavegacion() {
             className="text-emerald-500 transition-transform group-hover:scale-110"
           />
           <span className="text-xl font-bold tracking-tight text-slate-800">
-            La despensa de Lapa
+            MarkFood
           </span>
         </Link>
 

@@ -48,8 +48,8 @@ async function hacerPeticion(ruta, opciones) {
       let errorData = {};
       try {
         errorData = await respuesta.json();
-      } catch (errorData) {
-        // Si el body no es JSON, no pasa nada, usamos mensaje genérico
+      } catch (err) {
+       alert('Error'+ err.message);
       }
       let mensaje = errorData.mensaje;
       if (!mensaje) {

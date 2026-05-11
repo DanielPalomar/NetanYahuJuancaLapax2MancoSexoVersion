@@ -1,61 +1,60 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Utensils } from 'lucide-react';
 import TarjetaReceta from '../components/TarjetaReceta';
 import { serviciosAPI } from '../services/servicios';
 
-/**
- * PÁGINA DE RECETAS 
- */
 function Recetas() {
-  let [recetas, setRecetas] = useState([]);
-  let [productos, setProductos] = useState([]);
+  const [recetas, setRecetas] = useState([]);
+  const [productos, setProductos] = useState([]);
 
-  //promesa en honor a Marco Javier 
-  useEffect(function() {
-    Promise.all([
-      serviciosAPI.obtenerRecetasSugeridas(),
-      serviciosAPI.obtenerDespensa()
-    ]).then(function(resultados) {
-      setRecetas(resultados[0] || []);
-      setProductos(resultados[1] || []);
-    }).catch(function() {
-      console.log('error');
-    });
+  // el useEfect es para cargar las recetas y los productos al crear esto 
+ useEffect(() => {
+    const obtenerInformacion = async () => {
+      try {
+        const recetas = await serviciosAPI.obtenerRecetasSugeridas();
+        const productos = await serviciosAPI.obtenerDespensa();
+        setRecetas(recetas || []);
+        setProductos(productos || []);
+      } catch (error) {
+        console.error("Error al cargar los datos:", error);
+      }
+    };
+    obtenerInformacion();
   }, []);
 
-  let tarjetas = [];
-  for (let i = 0; i < recetas.length; i++) {
-    let r = recetas[i];
-    tarjetas.push(
-      <Link key={r.id} to={'/recetas/' + r.id}>
-        <TarjetaReceta receta={r} productosPantry={productos} />
-      </Link>
+  // Función para crear el diseño de la tarjeta
+  function crearTarjeta(receta) {
+    return (
+      <div key={receta.id} className="w-full md:w-80 mb-10">
+        <Link to={'/recetas/' + receta.id}>
+          <TarjetaReceta receta={receta} productosPantry={productos} />
+        </Link>
+      </div>
     );
   }
 
-  let contenido = tarjetas.length > 0 ? (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {tarjetas}
-    </div>
-  ) : (
-    <div className="text-center py-16 bg-white border border-blue-200 rounded">
-      <p className="text-slate-500">No hay recetas</p>
-    </div>
-  );
-
   return (
-    <div className="pb-24">
-      <div className="py-6 mb-6 border-b border-blue-200 bg-blue-50">
-        <div className="max-w mx-auto px-8">
-          <h1 className="text-4xl font-bold text-blue-900">Recetas</h1>
-          <p className="text-slate-700 text-sm mt-1">Recetas sugeridas con tus ingredientes</p>
-        </div>
-      </div>
+    <div className="max-w-6xl mx-auto px-6 py-12">
+      
+      <header className="text-center mb-16">
+        <h1 className="text-4xl font-light text-gray-800">Recetario</h1>
+        <p className="text-gray-500 mt-2">Ideas con lo que tienes a mano</p>
+      </header>
 
-      <div className="max-w mx-auto px-8">
-        {contenido}
-      </div>
+      {/* Contenedor Flex: centra el contenido y permite salto de línea */}
+      {recetas.length > 0 ? (
+        <div className="flex flex-wrap justify-center gap-10">
+          {recetas.map(crearTarjeta)}
+        </div>
+      ) : (
+        <div className="text-center py-20 border border-dashed rounded-3xl">
+          <p className="text-gray-400">No hay recetas disponibles.</p>
+          <Link to="/despensa" className="text-blue-500 block mt-4 font-bold">
+            Ir a mi despensa
+          </Link>
+        </div>
+      )}
+
     </div>
   );
 }
