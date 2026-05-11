@@ -11,15 +11,15 @@ function PanelAdmin() {
   let [nuevaContraseña, setNuevaContraseña] = useState('');
   let [nuevoEsAdmin, setNuevoEsAdmin] = useState(false);
 
- useEffect(() => {
-  serviciosAPI.obtenerUsuariosAdmin()
-    .then((data) => {
-      setUsuarios(data || []);
-    })
-    .catch((err) => {
-      console.error("Error al obtener usuarios administradores:", err);
-    });
-}, []);
+  useEffect(() => {
+    serviciosAPI.obtenerUsuariosAdmin()
+      .then((data) => {
+        setUsuarios(data || []);
+      })
+      .catch((err) => {
+        console.error("Error al obtener usuarios administradores:", err);
+      });
+  }, []);
 
   function agregarUsuario(e) {
     e.preventDefault();
@@ -61,7 +61,7 @@ function PanelAdmin() {
   }
 
 
-  // Filas de la tabla
+  // --- LÓGICA ORIGINAL RESTAURADA: Filas de la tabla con bucle for ---
   let filasTabla = [];
   for (let i = 0; i < usuarios.length; i++) {
     let u = usuarios[i];
@@ -99,9 +99,11 @@ function PanelAdmin() {
           <p className="text-slate-700">Total de usuarios: {usuarios.length}</p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* para organizar los elementos */}
+        <div className="flex flex-col lg:flex-row gap-6">
           
-          <div className="bg-white p-6 border border-blue-200 rounded">
+          {/* Contenedor del Formulario */}
+          <div className="flex-1 bg-white p-6 border border-blue-200 rounded self-start">
             <h2 className="text-xl font-bold text-blue-900 mb-4">Nuevo Usuario</h2>
             <form onSubmit={agregarUsuario} className="space-y-3">
               <input type="text" required placeholder="Nombre" className="w-full px-3 py-2 border border-blue-200 rounded focus:outline-none focus:border-blue-500" value={nuevoNombre} onChange={function(e) { setNuevoNombre(e.target.value); }} />
@@ -117,7 +119,8 @@ function PanelAdmin() {
             </form>
           </div>
 
-          <div className="lg:col-span-2 bg-white border border-blue-200 rounded overflow-hidden">
+          {/* Contenedor de la Tabla (Flex-2 para ser más ancho en pantallas grandes) */}
+          <div className="flex-[2] bg-white border border-blue-200 rounded overflow-hidden">
             <div className="px-4 py-3 border-b border-blue-200 bg-blue-50">
               <h2 className="font-bold text-blue-900">Usuarios</h2>
             </div>

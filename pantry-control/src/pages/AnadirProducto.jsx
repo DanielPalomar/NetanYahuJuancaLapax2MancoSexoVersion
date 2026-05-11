@@ -156,8 +156,9 @@ function AnadirProducto() {
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
+          {/* uso de flex para organizar los campos */}
+          <div className="flex flex-wrap gap-4">
+            <div className="flex-1 min-w-[200px]">
               <label className="block text-xs font-bold text-emerald-900 uppercase mb-2">
                 Marca
               </label>
@@ -168,7 +169,7 @@ function AnadirProducto() {
                 className="w-full p-4 bg-emerald-50/50 border border-emerald-200 rounded-xl outline-none"
               />
             </div>
-            <div>
+            <div className="flex-1 min-w-[100px]">
               <label className="block text-xs font-bold text-emerald-900 uppercase mb-2">
                 Unidades
               </label>
@@ -182,8 +183,9 @@ function AnadirProducto() {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
+          {/* uso de flex para organizar los campos */}
+          <div className="flex flex-wrap gap-4">
+            <div className="flex-1 min-w-[200px]">
               <label className="block text-xs font-bold text-emerald-900 uppercase mb-2">
                 Código
               </label>
@@ -205,7 +207,7 @@ function AnadirProducto() {
                 </button>
               </div>
             </div>
-            <div>
+            <div className="flex-1 min-w-[200px]">
               <label className="block text-xs font-bold text-emerald-900 uppercase mb-2">
                 Fecha Caducidad
               </label>

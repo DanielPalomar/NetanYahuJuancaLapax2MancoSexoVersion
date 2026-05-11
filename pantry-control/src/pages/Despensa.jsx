@@ -99,7 +99,7 @@ function Despensa() {
           </div>
         )}
 
-        {/* CONTENEDOR FLEX (Sin Grid para evitar solapamientos raros) */}
+        {/* Contenedor normal) */}
         <div className="flex flex-wrap justify-center gap-8">
           {listaOrdenada.length > 0 ? (
             listaOrdenada.map(function renderizarTarjeta(p) {
