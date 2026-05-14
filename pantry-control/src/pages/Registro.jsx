@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { serviciosAPI } from "../services/servicios";
 
 function Registro() {
-  // Hook para redirigir al usuario
+  // Para que cuando se termine de registrar nos mande al login
   let navegar = useNavigate();
 
   // Estados para guardar los datos del formulario
@@ -14,7 +14,7 @@ function Registro() {
   let [contraseña, setContraseña] = useState("");
   let [error, setError] = useState(null);
 
-  // Funciones para actualizar cada campo 
+  // to esto para actualizar cada campo 
   function cambiarNombre(e) {
     setNombre(e.target.value);
   }
@@ -53,7 +53,7 @@ function Registro() {
   }
 
   return (
-    /* Fondo de la página */
+
     <div className="flex items-center justify-center min-h-screen bg-emerald-50 px-4 py-8">
       {/* Tarjeta blanca principal */}
       <div className="w-full max-w-md bg-white p-10 rounded-[2rem] shadow-sm border border-emerald-100">
@@ -65,7 +65,7 @@ function Registro() {
           <p className="text-emerald-600/80">Únete a la mejor despensa</p>
         </div>
 
-        {/* Alerta de error si existe */}
+        {/* Alerta de error */}
         {error && (
           <div className="bg-red-50 text-red-600 p-4 rounded-xl mb-6 text-sm border border-red-100 text-center">
             {error}
@@ -74,7 +74,7 @@ function Registro() {
 
         {/* Formulario */}
         <form onSubmit={enviar} className="space-y-4">
-          {/* Fila doble: Nombre y Apellido */}
+          {/*Nombre y Apellido */}
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-emerald-900 mb-2">
@@ -104,7 +104,7 @@ function Registro() {
             </div>
           </div>
 
-          {/* Campo de Usuario */}
+          {/* Usuario */}
           <div>
             <label className="block text-sm font-medium text-emerald-900 mb-2">
               Usuario
@@ -119,7 +119,7 @@ function Registro() {
             />
           </div>
 
-          {/* Campo de Correo */}
+          {/* Correo */}
           <div>
             <label className="block text-sm font-medium text-emerald-900 mb-2">
               Correo
@@ -134,7 +134,7 @@ function Registro() {
             />
           </div>
 
-          {/* Campo de Contraseña */}
+          {/* Contraseña */}
           <div>
             <label className="block text-sm font-medium text-emerald-900 mb-2">
               Contraseña
@@ -149,7 +149,7 @@ function Registro() {
             />
           </div>
 
-          {/* Botón de acción */}
+          {/* Botón */}
           <button
             type="submit"
             className="w-full bg-emerald-600 text-white font-semibold py-3.5 rounded-xl hover:bg-emerald-700 transition-colors mt-2 shadow-sm shadow-emerald-200"
@@ -158,7 +158,7 @@ function Registro() {
           </button>
         </form>
 
-        {/* Enlace para volver */}
+        {/* volver si ya tienes cuenta */}
         <p className="text-center text-emerald-600/80 mt-8">
           ¿Ya tienes cuenta?{" "}
           <Link

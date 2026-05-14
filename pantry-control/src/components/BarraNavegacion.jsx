@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { LogOut, UserPlus, UserCircle, Sprout } from "lucide-react";
-// Porno y putas?
+// Porno y putas? (jose elimino o esto o lo dejo como huellita del live share kjasjkdashjkdajosdiasojdoisajdoisa)
 function BarraNavegacion() {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
@@ -13,9 +13,7 @@ function BarraNavegacion() {
 
   return (
     <nav className="w-full border-b border-slate-100 bg-white/90 backdrop-blur-sm sticky top-0 z-50">
-      {/* Usamos px-8 o px-12 para dar esa separación de los bordes de la pantalla */}
       <div className="w-full px-8 md:px-12 h-20 flex items-center justify-between">
-        {/* Logo: Más limpio, sin cajas */}
         <Link to="/" className="flex items-center gap-3 group">
           <Sprout
             size={26}
@@ -25,8 +23,6 @@ function BarraNavegacion() {
             MarkFood
           </span>
         </Link>
-
-        {/* Navegación Central: Minimalismo puro */}
         {token && (
           <div className="hidden md:flex items-center gap-10 text-[15px] font-medium text-slate-500 ">
             <Link
@@ -51,8 +47,6 @@ function BarraNavegacion() {
             )}
           </div>
         )}
-
-        {/* Botones Derecha: Manteniendo tus iconos originales pero estilizados */}
         <div className="flex items-center gap-6">
           {token ? (
             <button

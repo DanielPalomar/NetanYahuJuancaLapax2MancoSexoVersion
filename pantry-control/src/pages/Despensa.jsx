@@ -1,18 +1,15 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-// Usamos 'as IconoInfinito' para evitar el error de ESLint por usar la palabra reservada 'Infinity'
-import { Plus, Package, AlertCircle, Hash, Calendar, Infinity as IconoInfinito } from 'lucide-react';
+import { Plus, Package, AlertCircle, Hash, Calendar } from 'lucide-react';
 import { serviciosAPI } from '../services/servicios';
-
-// Importamos el componente desde la carpeta components
-import TarjetaProducto from '../components/TarjetaProducto'; 
+import TarjetaProducto from '../components/TarjetaProducto';
 
 function Despensa() {
   const navegar = useNavigate();
   const [productos, setProductos] = useState([]);
   const [error, setError] = useState(false);
 
-  // --- 1. LÓGICA DE DATOS ---
+  // LÓGICA DE DATITOS
 
   function actualizarEstado(datos) {
     if (datos) {
@@ -30,16 +27,15 @@ function Despensa() {
       .catch(manejarError);
   }
 
-  // Usamos una función nombrada para el useEffect
+  //PARA CARGAR LO DATO
   useEffect(function alMontar() {
     cargarDatos();
-  },);
+  }, []);
 
-  // --- 2. ACCIONES ---
+  // ACCIONES 
 
   function eliminar(id) {
     function filtrarLista() {
-      // Función nombrada dentro del filter
       const nuevaLista = productos.filter(function coincideId(p) {
         return p.id !== id;
       });
@@ -53,7 +49,7 @@ function Despensa() {
       });
   }
 
-  // --- 3. ORDENACIÓN ---
+  //ORDENADURA
 
   function compararFechas(a, b) {
     // Si no hay fecha de caducidad, lo mandamos al final
@@ -66,12 +62,17 @@ function Despensa() {
 
   return (
     <div className="min-h-screen bg-[#f6f9f7]">
-      
+
       {/* CABECERA */}
-      <header className="flex items-center justify-between px-8 py-6 border-b bg-white shadow-sm">
-        <div>
-          <h1 className="text-3xl font-bold text-[#1f2937]">Mi Despensa</h1>
-          <div className="flex items-center gap-2 mt-1">
+      <header className="relative flex items-center justify-between px-4 sm:px-8 py-6 border-b bg-white shadow-sm min-h-[100px] overflow-hidden">
+
+        {/*esto es basicamente como un hueco en medio para que el titulo quede en el medions*/}
+        <div className="hidden sm:block flex-1"></div>
+
+        {/* Cabecera */}
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center pointer-events-none w-full px-2">
+          <h1 className="text-2xl sm:text-3xl font-bold text-[#1f2937] text-center">Mi Despensa</h1>
+          <div className="flex items-center justify-center gap-2 mt-1 pointer-events-auto">
             <span className="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-lg text-xs font-bold flex items-center gap-1">
               <Hash size={12} /> {productos.length}
             </span>
@@ -81,16 +82,20 @@ function Despensa() {
           </div>
         </div>
 
-        <Link
-          to="/añadir"
-          className="bg-[#22c55e] hover:bg-[#16a34a] text-white px-5 py-2.5 rounded-xl flex items-center gap-2 font-semibold shadow-sm transition-transform active:scale-95"
-        >
-          <Plus size={18} />
-          Añadir producto
-        </Link>
+        {/* Botón Añadir */}
+        <div className="flex-1 flex justify-end z-10 relative">
+          <Link
+            to="/añadir"
+            className="bg-[#22c55e] hover:bg-[#16a34a] text-white px-3 sm:px-5 py-2.5 rounded-xl flex items-center gap-2 font-semibold shadow-sm transition-transform active:scale-95 text-sm sm:text-base whitespace-nowrap"
+          >
+            <Plus size={18} />
+            <span className="hidden sm:inline">Añadir producto</span>
+            <span className="sm:hidden">Añadir</span>
+          </Link>
+        </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-6 py-12">
+      <main className="w-full flex flex-col items-center px-4 sm:px-8 py-12">
         {/* Alerta de error de conexión */}
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-600 p-4 rounded-xl flex items-center gap-2 mb-8">
@@ -99,42 +104,39 @@ function Despensa() {
           </div>
         )}
 
-        {/* Contenedor normal) */}
-        <div className="flex flex-wrap justify-center gap-8">
+        {/* Contenedor normal */}
+        <div className="flex flex-row flex-wrap justify-center items-center w-full gap-6 sm:gap-8">
           {listaOrdenada.length > 0 ? (
             listaOrdenada.map(function renderizarTarjeta(p) {
-              
-              // Funciones nombradas para cada producto
+
+              // funciones para cada producto
               function irAEditar() { navegar('/editar/' + p.id); }
               function irABorrar() { eliminar(p.id); }
 
               return (
-                <div key={p.id} className="relative pt-6">
-                  {/* ICONO DE ESTADO FLOTANTE: Calendar o Infinito */}
-                  <div className="absolute top-2 right-6 z-30 bg-white border-2 border-emerald-50 shadow-md rounded-full p-2">
-                    {p.fechaCaducidad ? (
+                <div key={p.id} className="relative pt-6 w-[340px] max-w-[90vw] flex-shrink-0">
+                  {/*icono flotante cool */}
+                  {p.fechaCaducidad && (
+                    <div className="absolute top-2 right-2 z-30 bg-white border-2 border-emerald-50 shadow-md rounded-full p-2">
                       <Calendar size={18} className="text-orange-500" />
-                    ) : (
-                      <IconoInfinito size={18} className="text-blue-500" />
-                    )}
-                  </div>
+                    </div>
+                  )}
 
-                  {/* Wrapper con ancho fijo para que se vea como una rejilla pero con Flex */}
-                  <div className="w-full sm:w-[340px]">
-                    <TarjetaProducto 
-                      producto={p} 
-                      alEditar={irAEditar} 
-                      alEliminar={irABorrar} 
+                  <div className="w-full h-full">
+                    <TarjetaProducto
+                      producto={p}
+                      alEditar={irAEditar}
+                      alEliminar={irABorrar}
                     />
                   </div>
                 </div>
               );
             })
           ) : (
-            /* Pantalla cuando no hay nada */
+            /* Pantalla cuando no hay nadita */
             !error && (
-              <div className="w-full text-center py-20 text-gray-400">
-                <Package size={48} className="mx-auto mb-3 opacity-20" />
+              <div className="w-full text-center py-20 text-gray-400 flex flex-col items-center justify-center">
+                <Package size={48} className="mb-3 opacity-20" />
                 <p className="text-lg">Tu despensa está vacía</p>
               </div>
             )

@@ -7,7 +7,7 @@ import { serviciosAPI } from "../services/servicios";
 function AnadirProducto() {
   let navigate = useNavigate();
 
-  // --- ESTADOS DEL FORMULARIO ---
+  // estados form
   let [producto, setProducto] = useState({
     nombre: "",
     marca: "",
@@ -17,11 +17,11 @@ function AnadirProducto() {
   });
   let [escaneando, setEscaneando] = useState(false);
 
-  // Referencias para el control de lectura
+  // Referencias para el control de lectura (para que no se pierda cuando recargue y que ta,ppoco reinicie) (como el livewire en laravel +-)
   let contadorRef = useRef(0);
   let ultimoCodigoRef = useRef(null);
 
-  // --- FUNCIÓN PARA ACTUALIZAR CUALQUIER CAMPO ---
+  //ACTUASLIZAR LOS DATOS
   function manejarInput(e) {
     let campo = e.target.name;
     let valor = e.target.value;
@@ -30,7 +30,7 @@ function AnadirProducto() {
     });
   }
 
-  // --- BUSCAR DATOS POR CÓDIGO ---
+  //BUSCAR DATOS POR CÓDIGO 
   function buscarCodigo(codigo) {
     let url =
       "https://world.openfoodfacts.org/api/v0/product/" + codigo + ".json";
@@ -52,7 +52,7 @@ function AnadirProducto() {
       });
   }
 
-  // --- CONFIGURACIÓN DEL ESCÁNER ---
+  // CONFIGURACIÓN DEL ESCÁNER 
   useEffect(
     function () {
       if (!escaneando) return;
@@ -94,7 +94,7 @@ function AnadirProducto() {
     [escaneando],
   );
 
-  // --- GUARDAR Y VOLVER ---
+  // GUARDAR Y VOLVER
   function guardar(e) {
     e.preventDefault();
     serviciosAPI.anadirProducto(producto).then(function () {
@@ -131,12 +131,9 @@ function AnadirProducto() {
         >
           <Camera /> {escaneando ? "Detener Escáner" : "Escanear Código"}
         </button>
-
-        {/* El contenedor del visor ahora tiene CSS para cubrir todo el espacio */}
         <div
-          className={`relative overflow-hidden rounded-3xl bg-black transition-all duration-500 mb-8 ${
-            escaneando ? "aspect-video opacity-100" : "h-0 opacity-0"
-          } [&_video]:object-cover [&_video]:w-full [&_video]:h-full`}
+          className={`relative overflow-hidden rounded-3xl bg-black transition-all duration-500 mb-8 ${escaneando ? "aspect-video opacity-100" : "h-0 opacity-0"
+            } [&_video]:object-cover [&_video]:w-full [&_video]:h-full`}
         >
           <div id="visor" className="w-full h-full"></div>
         </div>
@@ -155,8 +152,6 @@ function AnadirProducto() {
               className="w-full p-4 bg-emerald-50/50 border border-emerald-200 rounded-xl outline-none focus:border-emerald-500"
             />
           </div>
-
-          {/* uso de flex para organizar los campos */}
           <div className="flex flex-wrap gap-4">
             <div className="flex-1 min-w-[200px]">
               <label className="block text-xs font-bold text-emerald-900 uppercase mb-2">
@@ -183,7 +178,6 @@ function AnadirProducto() {
             </div>
           </div>
 
-          {/* uso de flex para organizar los campos */}
           <div className="flex flex-wrap gap-4">
             <div className="flex-1 min-w-[200px]">
               <label className="block text-xs font-bold text-emerald-900 uppercase mb-2">
