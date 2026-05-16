@@ -13,6 +13,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -46,11 +47,12 @@ public class SpringSecurityConfig {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
-    /* GESTIÓN DE CONTRASEÑAS:
-     * - Configurado en texto plano para facilitar el desarrollo.     */
+    /* CODIFICADOR DE CONTRASEÑAS: consigue q la contraseña enviada desde Postman:
+     * - Se cifra al guardar
+     * - Se compara cifrada en el login     */
     @Bean
     PasswordEncoder passwordEncoder() {
-        return org.springframework.security.crypto.password.NoOpPasswordEncoder.getInstance();
+        return new BCryptPasswordEncoder();
     }
 
     /* ===========================
@@ -61,8 +63,8 @@ public class SpringSecurityConfig {
 
         return http.authorizeHttpRequests(authz -> authz
             // Login y registro públicos:
-            .requestMatchers(HttpMethod.POST, "/login").permitAll()
-            .requestMatchers(HttpMethod.POST, "/api/usuarios/registrar").permitAll()
+            .requestMatchers(HttpMethod.GET, "/login").permitAll()
+            .requestMatchers(HttpMethod.POST, "/api/users/register").permitAll()
 
             // Recursos estáticos
             .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()

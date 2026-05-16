@@ -53,6 +53,9 @@ CREATE TABLE Users_Roles (
 
 /* =====================================================
    TABLA: products
+   CAMBIOS: se eliminaron weight y url_image,
+            se añadieron cantidad y fecha_caducidad
+            (campos que antes estaban en la tabla carts)
    ===================================================== */
 CREATE TABLE Products (
     id BIGINT NOT NULL AUTO_INCREMENT,
@@ -60,7 +63,7 @@ CREATE TABLE Products (
     name VARCHAR(40) NOT NULL,
     brand VARCHAR(20),
     cantidad INT DEFAULT 1,
-    url_image TEXT,
+    fecha_caducidad DATE,
     user_id BIGINT NOT NULL,
     CONSTRAINT uk_products_barcode UNIQUE (barcode),
     CONSTRAINT pk_products PRIMARY KEY (id),
@@ -68,7 +71,22 @@ CREATE TABLE Products (
     
 );
 
-
+/* =====================================================
+   TABLA: carts (COMENTADO - código muerto, no usado por el frontend)
+   =====================================================
+CREATE TABLE Carts (
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    product_id BIGINT NOT NULL,
+    stock INT NOT NULL,
+    expiration_date DATE NOT NULL,    
+    user_id BIGINT NOT NULL,
+    CONSTRAINT pk_carts PRIMARY KEY (id),
+    CONSTRAINT fk_carts_products FOREIGN KEY (product_id) REFERENCES Products(id),
+    CONSTRAINT fk_carts_user FOREIGN KEY (user_id) REFERENCES Users(id),
+    CONSTRAINT uk_carts_product_expiration 
+        UNIQUE (user_id, product_id, expiration_date)
+);
+*/
 
 /* =====================================================
    DATOS INICIALES (OPCIONAL)
@@ -78,17 +96,23 @@ INSERT INTO Roles (name) VALUES
 ('ROLE_USER'),
 ('ROLE_ADMIN');
 
-/* Insertar usuario admin */
+/* Insertar usuario admin (la contraseña es 'admin' pero encriptada con BCrypt) */
 INSERT INTO Users (name, lastname,username, password, email, enabled)
-VALUES ('admin', 'Admin', 'admin', 'admin', 'admin@admin.com', TRUE); 
+VALUES ('admin', 'Admin', 'admin', '$2a$10$DOMDxjYyfZ/e7RcBfUpzqeaCs8pLgcizuiQWXPkU35nOhZlFcE9MS', 'admin@admin.com', TRUE); 
 
 /* Asignar rol ADMIN al usuario admin */
 INSERT INTO users_roles (user_id, role_id)
 VALUES (1, 2);
 
-/* Productos de ejemplo */
+/* Productos de ejemplo (CAMBIO: ahora con cantidad en vez de weight) */
 INSERT INTO Products (name,  brand, cantidad, user_id)
 VALUES 
 ('Tomate frito', 'Orlando', 2, 1),
 ('Leche entera', 'Mercadona', 1, 1),
 ('Patatas', '', 5, 1);
+
+/* Carrito de ejemplo (COMENTADO - código muerto)
+INSERT INTO Carts ( product_id, stock, expiration_date, user_id)
+VALUES
+(1, 5,'2026-06-01', 1)
+*/

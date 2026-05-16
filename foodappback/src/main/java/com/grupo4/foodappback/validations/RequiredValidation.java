@@ -1,24 +1,34 @@
 package com.grupo4.foodappback.validations;
 
 import org.springframework.util.StringUtils;
+
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
-/**
- * Valida que un campo de tipo {@link String} no sea null, vacío o solo espacios en blanco.
- * Se usa con la anotación personalizada {@code @IsRequired}.
+/*
+ Implementación de la validación personalizada @IsRequired. Comprueba que CUALQUIER campo de tipo String:
+       - No sea null,
+       - No esté vacío,
+       - No contenga solo espacios en blanco.
  */
 public class RequiredValidation implements ConstraintValidator<IsRequired, String> {
 
     /**
-     * Verifica que el valor contenga al menos un carácter no blanco.
-     *
-     * @param value   el valor del campo a validar
-     * @param context contexto de validación (no usado)
-     * @return true si el valor tiene texto, false en caso contrario
+     Método ---isValid--- que se ejecuta automáticamente durante la validación (NO USAMOS MÉTODOS DEL SERVICE):
+        @param value: valor del campo a validar.
+        @param context: contexto de validación.
+        @return TRUE si el valor es válido, FALSE si el valor es nulo, vacío o solo espacios.
      */
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
+
+        /* Método ---StringUtils.hasText--- q devuelve TRUE si:
+              - value != null,
+              - contiene al menos un carácter no blanco
+        */
         return StringUtils.hasText(value);
+
+        // Implementación equivalente (otra forma):
+        //      return (value != null && !value.isEmpty() && !value.isBlank());
     }
 }

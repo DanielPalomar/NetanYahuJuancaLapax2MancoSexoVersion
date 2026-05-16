@@ -1,5 +1,8 @@
 package com.grupo4.foodappback.entities;
 
+// CAMBIO: se eliminaron imports de ArrayList, List, JsonManagedReference, CascadeType, OneToMany
+// (eran para la relación con Cart, ya comentada como código muerto)
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.grupo4.foodappback.validations.IsRequired;
 
@@ -14,10 +17,8 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Size;
 
-/**
- * ENTIDAD: PRODUCTO
- * Representa un alimento guardado en la despensa de un usuario.
- */
+import java.time.LocalDate;
+
 @Entity
 @Table(name="products")
 public class Product {
@@ -26,38 +27,31 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    /**
-     * CÓDIGO DE BARRAS
-     * Nota: Hemos quitado la restricción de 'unique' en la base de datos.
-     * El frontend envía 'null' cuando no hay código para permitir múltiples productos sin EAN.
-     */
-    @Column
+    @Column(unique = true)
     private String barcode;  
     
-    /**
-     * NOMBRE DEL PRODUCTO
-     * Hemos subido el límite a 255 caracteres para evitar errores con productos de OpenFoodFacts.
-     */
     @IsRequired
-    @Size(max = 255, message = "{Size.product.name}")
+    @Size(max = 20, message = "{Size.product.name}")
     private String name;    
     
-    @Size(max = 255, message = "{Size.product.brand}")
+    @Size(max = 20, message = "{Size.product.brand}")
     private String brand;   
 
-    private int cantidad;
+    // CAMBIO: nuevos campos (antes estaban en Cart como stock y expiration_date)
+    private Integer cantidad;
 
-    private String url_image;
+    private LocalDate fechaCaducidad;
 
-    /**
-     * FECHA DE CADUCIDAD
-     * Usamos JsonFormat para que el servidor entienda el formato de fecha ISO (yyyy-MM-dd) que envía React.
-     */
-    @com.fasterxml.jackson.annotation.JsonFormat(pattern = "yyyy-MM-dd")
-    private java.time.LocalDate expirationDate;
+    // CAMBIO: campos eliminados de la BD (código muerto)
+    // private float weight;
+    // private String url_image;
   
+    //relacion con la tabla cart (COMENTADO - código muerto)
+    // @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    // @JsonManagedReference("cart-product")
+    // private List<Cart> carts = new ArrayList<>();
     
-    // Relación con el Usuario (Dueño de la despensa)
+     //relacion con la tabla users:
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     @JsonBackReference("user-product")
@@ -84,19 +78,25 @@ public class Product {
     public String getBrand() {        return brand;    }
     public void setBrand(String brand) {        this.brand = brand;    }
 
-    public String getUrl_image() {        return url_image;    }
-    public void setUrl_image(String url_image) {        this.url_image = url_image;    }   
+    // CAMBIO: nuevos getters/setters para cantidad y fechaCaducidad
+    public Integer getCantidad() {        return cantidad;    }
+    public void setCantidad(Integer cantidad) {        this.cantidad = cantidad;    }
+
+    public LocalDate getFechaCaducidad() {        return fechaCaducidad;    }
+    public void setFechaCaducidad(LocalDate fechaCaducidad) {        this.fechaCaducidad = fechaCaducidad;    }
 
      public User getUser() {        return user;    }
     public void setUser(User user) {        this.user = user;    }
 
+    // (COMENTADO - código muerto de Cart)
+    // public List<Cart> getCarts() {        return carts;    }
+    // public void setCarts(List<Cart> carts) {        this.carts = carts;    }
 
+    // (COMENTADO - campos eliminados de la BD)
+    // public float getWeight() {        return weight;    }
+    // public void setWeight(float weight) {        this.weight = weight;    }
 
-
-    public int getCantidad() {        return cantidad;    }
-    public void setCantidad(int cantidad) {        this.cantidad = cantidad;    }
-
-    public java.time.LocalDate getExpirationDate() { return expirationDate; }
-    public void setExpirationDate(java.time.LocalDate expirationDate) { this.expirationDate = expirationDate; }
+    // public String getUrl_image() {        return url_image;    }
+    // public void setUrl_image(String url_image) {        this.url_image = url_image;    }   
 
 }

@@ -1,117 +1,74 @@
 package com.grupo4.foodappback.controllers;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.grupo4.foodappback.entities.User;
 import com.grupo4.foodappback.services.UserService;
 
 import jakarta.validation.Valid;
 
-/**
- * CONTROLADOR DE USUARIOS
- * Centraliza la gestión de usuarios tanto para usuarios normales como para administradores.
- */
-@CrossOrigin(origins="*", originPatterns = "*")
+@CrossOrigin(origins = "http://localhost:5500", originPatterns = "*")
+
+// CONTROLLER PARA TODOS LOS ROLES: guardar y modificar users en la BD
+// ======================================================================
+
 @RestController
-@RequestMapping("/api/usuarios")
+@RequestMapping("/api/users")
 public class UserController {
-    
+
     @Autowired
     private UserService userService;
-    
-    // --- ENDPOINTS PÚBLICOS ---
 
-    @PostMapping("/registrar")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody User user, 
-                                        BindingResult result,
-                                        Authentication authentication){      
-        if (result.hasErrors()){
+    // registrar un nuevo usuario q por defecto va a tener ROLE_USER y lo devuelve:
+    @PostMapping("/register")
+    public ResponseEntity<?> registerUser(@Valid @RequestBody User user,
+            BindingResult result) {
+        if (result.hasErrors()) {
             return validation(result);
         }
-
-        // Si el que registra NO es admin, forzamos que el nuevo usuario NO sea admin
-        boolean isRequesterAdmin = authentication != null && authentication.getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
-        
-        if (!isRequesterAdmin) {
-            user.setAdmin(false);
-        }
-
+        // ==========================================================
+        // esto se debe de borrar luego de crear un admin:
+        // user.setAdmin(false);
+        // ==========================================================
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(userService.registerUser(user));
-    }     
-    
-    // --- ENDPOINTS PARA USUARIO AUTENTICADO ---
+    }
 
+    // Modifica el userLog y lo devuelve
     @PutMapping
-    public ResponseEntity<?> editLogUser (@Valid @RequestBody User user, 
-                                        Authentication authentication,
-                                        BindingResult result) {       
-        if (result.hasErrors()){
+    public ResponseEntity<?> editLogUser(@Valid @RequestBody User user,
+            Authentication authentication,
+            BindingResult result) {
+        if (result.hasErrors()) {
             return validation(result);
-        }        
+        }
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(userService.editLogUser(authentication, user));    
+                .body(userService.editLogUser(authentication, user));
     }
 
-    // --- ENDPOINTS PARA ADMINISTRADORES ---
-
-    @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping
-    public List<User> getAllUsers() {
-        return userService.getAllUsers();
-    }
-
-    @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/{id}")
-    public User getUser(@PathVariable Long id) {
-        return userService.getUser(id);
-    }    
-
-    @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping("/{id}")
-    public ResponseEntity<?> editUser(@PathVariable Long id, 
-                                    @Valid @RequestBody User user, 
-                                    BindingResult result) {       
-        if (result.hasErrors()){
-            return validation(result);
-        }        
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(userService.editUser(user, id));    
-    }
-
-    @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/{id}")
-    public List<User> deleteUser (@PathVariable Long id) {
-        return userService.deleteUser(id); 
-    }   
-    
-    @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping("/activar/{id}")
-    public User activateUser(@PathVariable Long id) {     
-        return userService.activateUser(id);
-    }
-
+    // Método común para manejar los errores al usar validaciones estándar en la
+    // entity:
     private ResponseEntity<?> validation(BindingResult result) {
         Map<String, String> errors = new HashMap<>();
         result.getFieldErrors().forEach(err -> {
             errors.put(
-                err.getField(),
-                "El campo " + err.getField() + " " + err.getDefaultMessage()
-            );
+                    err.getField(),
+                    "El campo " + err.getField() + " " + err.getDefaultMessage());
         });
         return ResponseEntity.badRequest().body(errors);
     }

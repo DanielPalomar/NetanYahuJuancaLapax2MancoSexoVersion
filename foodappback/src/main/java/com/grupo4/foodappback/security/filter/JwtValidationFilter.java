@@ -24,7 +24,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 
 /*Esta clase es un filtro de seguridad que se ejecuta en cada petición y hace lo siguiente:
 👉 Comprueba si hay un token JWT en la cabecera
@@ -55,7 +55,7 @@ public class JwtValidationFilter extends BasicAuthenticationFilter {
         String path = request.getServletPath();
 
         // ENDPOINTS PÚBLICOS (no validar JWT aquí)
-        if (path.equals("/api/usuarios/registrar") || path.equals("/login")) {
+        if (path.equals("/api/users/register") || path.equals("/login")) {
             chain.doFilter(request, response); // continuar sin validar
             return;
         }

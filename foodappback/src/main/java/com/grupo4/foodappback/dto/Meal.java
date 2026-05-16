@@ -1,7 +1,6 @@
 package com.grupo4.foodappback.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonAlias;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -14,22 +13,16 @@ import java.util.Map;
 
 public class Meal {
 
-    @JsonProperty("id")
-    @JsonAlias("idMeal")
+    @JsonProperty("idMeal")
     private String idMeal;
 
-    private java.util.List<String> translatedIngredientes;
-
-    @JsonProperty("titulo")
-    @JsonAlias("strMeal")
+    @JsonProperty("strMeal")
     private String strMeal;
 
-    @JsonProperty("pasos")
-    @JsonAlias("strInstructions")
+    @JsonProperty("strInstructions")
     private String strInstructions;
 
-    @JsonProperty("imagen")
-    @JsonAlias("strMealThumb")
+    @JsonProperty("strMealThumb")
     private String strMealThumb;
 
     // Ingredientes y medidas (TheMealDB usa 20 campos)
@@ -134,34 +127,6 @@ public class Meal {
             }
         }
         return ingredients;
-    }
-
-    // Método para el frontend en español
-    @JsonProperty("ingredientes")
-    public java.util.List<String> getIngredientes() {
-        if (translatedIngredientes != null) {
-            return translatedIngredientes;
-        }
-        java.util.List<String> lista = new java.util.ArrayList<>();
-        Map<String, String> mapa = getIngredientsList();
-        for (Map.Entry<String, String> entry : mapa.entrySet()) {
-            lista.add(entry.getValue() + " " + entry.getKey());
-        }
-        return lista;
-    }
-
-    public void setIngredientes(java.util.List<String> ingredientes) {
-        this.translatedIngredientes = ingredientes;
-    }
-
-    @JsonProperty("tiempo")
-    public String getTiempo() {
-        return "25 min"; // Mocked
-    }
-
-    @JsonProperty("dificultad")
-    public String getDificultad() {
-        return "Media"; // Mocked
     }
 
     public String getIdMeal() {

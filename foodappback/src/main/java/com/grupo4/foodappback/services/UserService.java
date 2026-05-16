@@ -21,28 +21,30 @@ import jakarta.transaction.Transactional;
 
 @Service
 public class UserService {
-    
+
     @Autowired
     IUserRepository userRepository;
 
     @Autowired
     IRoleRepository roleRepository;
 
-    /* Codificador de contraseñas
-     * En este proyecto se usa texto plano para facilitar pruebas. */
+    /*
+     * Codificador de contraseñas (BCrypt normalmente)
+     * La contraseña enviada desde Postman se cifra aquí
+     */
     @Autowired
     private PasswordEncoder passwordEncoder;
 
     // MÉTODO SIN AUTHENTICATION
     // =========================
     @Transactional
-    public User registerUser(User user){
-        //para sustituir a las validaciones personalizadas:
+    public User registerUser(User user) {
+        // para sustituir a las validaciones personalizadas:
         if (userRepository.existsByEmail(user.getEmail())) {
-                throw new RuntimeException("El email ya existe");
+            throw new RuntimeException("El email ya existe");
         }
         if (userRepository.existsByUsername(user.getUsername())) {
-                throw new RuntimeException("El username ya existe");
+            throw new RuntimeException("El username ya existe");
         }
 
         // Busca el rol con nombre ROLE_USER en el repo:
@@ -59,50 +61,64 @@ public class UserService {
             Optional<Role> optionalRoleAdmin = roleRepository.findByName("ROLE_ADMIN");
             optionalRoleAdmin.ifPresent(roles::add);
         }
-       
+
         user.setRoles(roles);
 
-        // Se guarda la contraseña tal cual (texto plano) usando el NoOpPasswordEncoder.
-        if(user.getPassword() != null && !user.getPassword().isBlank()){
+        // Se codifica la contraseña con el encoder que hemos puesto arriba. NUNCA se
+        // debe guardar en texto plano.
+        if (user.getPassword() != null && !user.getPassword().isBlank()) {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
         }
 
         return userRepository.save(user);
-    } 
+    }
+
+    // Buscar usuario existente por su username (SIN ENDPOINT):
+    // public boolean existsByUsername(String username) {
+    // return userRepository.existsByUsername(username);
+    // }
+
+    // Buscar usuarios existentes por su email (SIN ENDPOINT):
+    // public boolean existsByEmail(String email) {
+    // return userRepository.existsByEmail(email);
+    // }
 
     // MÉTODO CON AUTHENTICATION
-    //==========================
+    // ==========================
     @Transactional
     public User editLogUser(Authentication authentication, User user) {
         String username = authentication.getName();
         User userFound = userRepository.findByUsername(username)
-                        .orElseThrow(() -> new UserNotFoundException("Usuario no encontrado"));
-        
-        userFound.setName(user.getName());  
+                .orElseThrow(() -> new UserNotFoundException("Usuario no encontrado"));
+        ;
+
+        userFound.setName(user.getName());
+
         userFound.setLastname(user.getLastname());
-        
-        if (!userFound.getUsername().equals(user.getUsername()) && userRepository.existsByUsername(user.getUsername())) {
+
+        if (!userFound.getUsername().equals(user.getUsername())
+                && userRepository.existsByUsername(user.getUsername())) {
             throw new RuntimeException("El username ya existe");
         }
         userFound.setUsername(user.getUsername());
-        
+
         if (!userFound.getEmail().equals(user.getEmail()) && userRepository.existsByEmail(user.getEmail())) {
             throw new RuntimeException("El email ya existe");
         }
         userFound.setEmail(user.getEmail());
-        
+
         if (user.getPassword() != null && !user.getPassword().isEmpty()) {
             userFound.setPassword(passwordEncoder.encode(user.getPassword()));
-        } 
-        
-        return userRepository.save(userFound);
+        }
+
+        return null;
     }
 
     // MÉTODOS EXCLUSIVOS DEL ROL ADMIN:
-    //==================================
+    // ==================================
 
     // Ver listado users:
-    public List<User> getAllUsers(){
+    public List<User> getAllUsers() {
         return userRepository.findAll();
     }
 
@@ -113,28 +129,29 @@ public class UserService {
 
     // Modificar un user existente:
     @Transactional
-    public User editUser(User user, Long id){
+    public User editUser(User user, Long id) {
         User userFound = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("Usuario no encontrado"));
 
-        userFound.setName(user.getName()); 
-        
+        userFound.setName(user.getName());
+
         userFound.setLastname(user.getLastname());
-        
-        if (!userFound.getUsername().equals(user.getUsername()) && userRepository.existsByUsername(user.getUsername())) {
+
+        if (!userFound.getUsername().equals(user.getUsername())
+                && userRepository.existsByUsername(user.getUsername())) {
             throw new RuntimeException("El username ya existe");
         }
         userFound.setUsername(user.getUsername());
-        
+
         if (!userFound.getEmail().equals(user.getEmail()) && userRepository.existsByEmail(user.getEmail())) {
             throw new RuntimeException("El email ya existe");
         }
         userFound.setEmail(user.getEmail());
-        
+
         if (user.getPassword() != null && !user.getPassword().isEmpty()) {
             userFound.setPassword(passwordEncoder.encode(user.getPassword()));
-        } 
-        
+        }
+
         // Añadir roles al usuario:
         Role roleAdmin = roleRepository.findByName("ROLE_ADMIN").orElseThrow();
         Role roleUser = roleRepository.findByName("ROLE_USER").orElseThrow();
@@ -142,23 +159,24 @@ public class UserService {
         userFound.getRoles().clear();
         userFound.getRoles().add(roleUser);
 
-        // solo se puede poner ROLE_ADMIN al admin -> si queremos más admins tenemos que ir a la tabla
+        // solo se puede poner ROLE_ADMIN al admin -> si queremos más admins tenemos que
+        // ir a la tabla
         if (user.isAdmin()) {
             userFound.getRoles().add(roleAdmin);
-        }       
+        }
 
         return userRepository.save(userFound);
     }
 
     // Borrar un user y devolver la lista de users:
-    public List<User> deleteUser(Long id){
+    public List<User> deleteUser(Long id) {
         userRepository.deleteById(id);
         return userRepository.findAll();
-    }   
+    }
 
     // Activar un user:
     @Transactional
-    public User activateUser(Long id){
+    public User activateUser(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("Usuario no encontrado"));
 

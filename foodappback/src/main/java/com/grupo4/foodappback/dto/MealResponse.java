@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonAlias;
 
 // API TheMealDB
 //============================================
@@ -13,7 +12,6 @@ import com.fasterxml.jackson.annotation.JsonAlias;
 public class MealResponse {
 
     @JsonProperty("meals")
-    @JsonAlias("meals")
     private List<Meal> meals = new ArrayList<>();
 
     public List<Meal> getMeals() {

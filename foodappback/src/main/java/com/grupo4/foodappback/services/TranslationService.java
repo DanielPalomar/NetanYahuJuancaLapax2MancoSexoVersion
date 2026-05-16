@@ -1,80 +1,178 @@
 package com.grupo4.foodappback.services;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.List;
-import java.util.ArrayList;
+import com.grupo4.foodappback.dto.TranslationResponse;
 
-/**
- * SERVICIO DE TRADUCCIÓN
- * Utiliza la API gratuita de Google Translate para localizar contenidos.
- */
 @Service
 public class TranslationService {
 
     private final WebClient webClient;
 
+    // Límite de caracteres de la API MyMemory por petición:
+    private static final int LIMITE_API = 500;
+
     public TranslationService(WebClient.Builder builder) {
-        this.webClient = builder.build();
+        this.webClient = builder
+                .baseUrl("https://api.mymemory.translated.net")
+                .build();
     }
 
-    /**
-     * Traduce un texto de un idioma a otro.
-     */
-    @SuppressWarnings("unchecked")
-    public String translate(String text, String sourceLang, String targetLang) {
-        if (text == null || text.trim().isEmpty()) return text;
+    // ======================
+    // CACHE (nivel básico pro)
+    // ======================
+    private final Map<String, String> cache = new ConcurrentHashMap<>();
+
+    // ======================
+    // DICCIONARIO LOCAL
+    // ======================
+    private final Map<String, String> dictionary = Map.of(
+            "ternera", "beef",
+            "pollo", "chicken",
+            "cerdo", "pork",
+            "arroz", "rice",
+            "cebolla", "onion",
+            "tomate", "tomato",
+            "ajo", "garlic",
+            "merluza", "hake"
+    );
+
+    // ======================
+    // API PUBLICA
+    // ======================
+    public String toEnglish(String text) {
+        return translate(text, "es", "en");
+    }
+
+    public String toSpanish(String text) {
+        return translate(text, "en", "es");
+    }
+
+    // ======================
+    // CORE TRANSLATION
+    // ======================
+    private String translate(String text, String from, String to) {
+
+        if (text == null || text.isBlank()) {
+            return text;
+        }
+
+        String normalized = text.trim().toLowerCase();
+        String key = from + ":" + to + ":" + normalized;
+
+        // 1. CACHE
+        String cached = cache.get(key);
+        if (cached != null) {
+            return cached;
+        }
+
+        // 2. DICCIONARIO (evita API para palabras simples)
+        if (from.equals("es") && to.equals("en")) {
+            String dictValue = dictionary.get(normalized);
+            if (dictValue != null) {
+                cache.put(key, dictValue);
+                return dictValue;
+            }
+        }
+
+        // 3. Si el texto supera el límite de la API, dividir en trozos y traducir cada uno:
+        String result;
+        if (text.length() > LIMITE_API) {
+            result = translateLong(text, from, to);
+        } else {
+            result = callExternalApi(text, from, to);
+        }
+
+        cache.put(key, result);
+
+        return result;
+    }
+
+    // ============================================
+    // TRADUCCIÓN DE TEXTOS LARGOS (> 500 chars)
+    // Divide por frases (". ") en trozos <= 500
+    // ============================================
+    private String translateLong(String text, String from, String to) {
+
+        List<String> trozos = dividirEnTrozos(text, LIMITE_API);
+        StringBuilder resultado = new StringBuilder();
+
+        for (int i = 0; i < trozos.size(); i++) {
+            String traducido = callExternalApi(trozos.get(i), from, to);
+            resultado.append(traducido);
+        }
+
+        return resultado.toString();
+    }
+
+    // Divide un texto largo en trozos de máximo 'maxChars' caracteres,
+    // intentando cortar por frases (". ") para no romper oraciones:
+    private List<String> dividirEnTrozos(String text, int maxChars) {
+
+        List<String> trozos = new ArrayList<>();
+        String restante = text;
+
+        while (restante.length() > maxChars) {
+            // Buscar el último punto-espacio dentro del límite:
+            int corte = restante.lastIndexOf(". ", maxChars);
+
+            if (corte <= 0) {
+                // Si no hay punto, buscar el último espacio:
+                corte = restante.lastIndexOf(" ", maxChars);
+            }
+            if (corte <= 0) {
+                // Si tampoco hay espacio, cortar en el límite exacto:
+                corte = maxChars;
+            } else {
+                // Incluir el punto y el espacio en el trozo:
+                corte = corte + 2;
+            }
+
+            trozos.add(restante.substring(0, corte));
+            restante = restante.substring(corte);
+        }
+
+        // Añadir lo que quede:
+        if (!restante.isEmpty()) {
+            trozos.add(restante);
+        }
+
+        return trozos;
+    }
+
+    // ======================
+    // API EXTERNA (controlada)
+    // ======================
+    private String callExternalApi(String text, String from, String to) {
 
         try {
-            // Construimos la URL de forma segura para evitar problemas con caracteres especiales
-            String url = UriComponentsBuilder.fromUriString("https://translate.googleapis.com/translate_a/single")
-                    .queryParam("client", "gtx")
-                    .queryParam("sl", sourceLang)
-                    .queryParam("tl", targetLang)
-                    .queryParam("dt", "t")
-                    .queryParam("q", text)
-                    .build()
-                    .toUriString();
-
-            List<Object> root = webClient.get()
-                    .uri(url)
+            TranslationResponse response = webClient.get()
+                    .uri(uriBuilder -> uriBuilder
+                            .path("/get") // Ruta get
+                            .queryParam("q", text) // Texto a traducir
+                            .queryParam("langpair", from + "|" + to) // Idioma al que traducir
+                            .build())
                     .retrieve()
-                    .bodyToMono(List.class)
+                    .bodyToMono(TranslationResponse.class)
                     .block();
 
-            if (root != null && !root.isEmpty() && root.get(0) instanceof List) {
-                List<List<Object>> sentences = (List<List<Object>>) root.get(0);
-                StringBuilder result = new StringBuilder();
-                for (List<Object> sentence : sentences) {
-                    if (sentence != null && !sentence.isEmpty()) {
-                        result.append(sentence.get(0).toString());
-                    }
-                }
-                return result.toString();
+            if (response == null ||
+                response.getResponseData() == null ||
+                response.getResponseData().getTranslatedText() == null) {
+                return text; // fallback seguro
             }
-        } catch (Exception e) {
-            System.err.println("❌ Error en traducción: " + e.getMessage());
-        }
-        return text; // Si falla, devolvemos el original
-    }
 
-    /**
-     * Traduce una lista de textos de forma eficiente.
-     */
-    public List<String> translateList(List<String> texts, String sourceLang, String targetLang) {
-        if (texts == null || texts.isEmpty()) return texts;
-        
-        // Unimos con un delimitador único que no suela aparecer en los ingredientes
-        String combined = String.join(" ||| ", texts);
-        String translated = translate(combined, sourceLang, targetLang);
-        
-        String[] split = translated.split(" \\|\\|\\| ");
-        List<String> result = new ArrayList<>();
-        for (String s : split) {
-            result.add(s.trim());
+            return response.getResponseData().getTranslatedText();
+
+        } catch (Exception e) {
+            // fallback anti-crash
+            return text;
         }
-        return result;
     }
 }

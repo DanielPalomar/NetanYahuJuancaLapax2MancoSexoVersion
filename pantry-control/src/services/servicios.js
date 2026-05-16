@@ -1,12 +1,12 @@
 /**
- * CONFIGURACIÓN CENTRAL DE LA API
- * Gestiona todas las comunicaciones con el backend Spring Boot.
+ * ugh, la api central. si esto se rompe, se rompe todo.
+ * literalmente hace de puente con el backend en spring boot.
  */
-let URL_API = 'http://localhost:9090';
+let URL_API = 'http://localhost:9090'; // recemos para q siga levantado en el 9090
 
 /**
- * Función base para realizar peticiones HTTP.
- * Maneja automáticamente el token de seguridad y los errores comunes.
+ * la vieja confiable. le pasas la ruta y reza para que devuelva un 200 ok.
+ * maneja el token y los errores comunes para no andar copiando y pegando esto mil veces.
  */
 async function hacerPeticion(ruta, opciones) {
   // Si no se pasan opciones, usar un objeto vacío para evitar errores
@@ -14,10 +14,10 @@ async function hacerPeticion(ruta, opciones) {
     opciones = {};
   }
 
-  // Sacar el token JWT del navegador (se guarda al hacer login)
+  // Sacar el token JWT del local storage (lo que guardamos cuando el profe hace login)
   let token = localStorage.getItem('token');
 
-  // Cabeceras que se envían en cada petición al backend
+  // Headers por defecto, porque obvio todo es JSON hoy en día
   let headers = {
     'Content-Type': 'application/json'
   };
@@ -36,20 +36,21 @@ async function hacerPeticion(ruta, opciones) {
   }
 
   try {
+    // el fetch de toda la vida apuntando a spring boot
     let respuesta = await fetch(URL_API + ruta, {
       method: opciones.method,
       headers: headers,
       body: opciones.body
     });
 
-    // Si el servidor responde con error (400, 401, 500, etc.)
+    // si da error (ya veo venir el 500 de java)
     if (!respuesta.ok) {
       // Intentar leer el mensaje de error del backend
       let errorData = {};
       try {
         errorData = await respuesta.json();
       } catch (err) {
-       alert('Error'+ err.message);
+        alert('Error' + err.message);
       }
       let mensaje = errorData.mensaje;
       if (!mensaje) {
@@ -72,11 +73,11 @@ async function hacerPeticion(ruta, opciones) {
 }
 
 // ========================================
-// OBJETO CON TODOS LOS SERVICIOS
+// OBJETO CON TODOS LOS ENDPOINTS 
 // ========================================
 export let serviciosAPI = {
 
-  // --- AUTENTICACIÓN ---
+  // --- LOGIN ---
   iniciarSesion: async function (credenciales) {
     let body = JSON.stringify({
       username: credenciales.usuario,
@@ -86,6 +87,7 @@ export let serviciosAPI = {
     return resultado;
   },
 
+  // --- REGISTRAR ---
   registrarUsuario: async function (datos) {
     let body = JSON.stringify({
       name: datos.nombre,
@@ -95,18 +97,18 @@ export let serviciosAPI = {
       password: datos.contraseña,
       admin: datos.admin
     });
-    let resultado = await hacerPeticion('/api/usuarios/registrar', { method: 'POST', body: body });
+    let resultado = await hacerPeticion('/api/users/register', { method: 'POST', body: body });
     return resultado;
   },
 
-  // --- GESTIÓN DE PRODUCTOS (DESPENSA) ---
-  // Obtiene todos los productos del usuario y traduce los nombres del backend (inglés) al frontend (español)
+  // --- DESPENSA ---
+  // trae los productos y traduce los nombres del backend (porque están en inglés)
   obtenerDespensa: async function () {
-    let lista = await hacerPeticion('/api/productos', { method: 'GET' });
+    let lista = await hacerPeticion('/api/products', { method: 'GET' });
     let resultado = [];
     for (let i = 0; i < lista.length; i++) {
       let p = lista[i];
-      // Mapeo: el backend usa nombres en inglés (name, brand, barcode...)
+      // traduccion simple ya que todo está en ingles
       // y el frontend usa nombres en español (nombre, marca, codigoBarras...)
       resultado.push({
         id: p.id,
@@ -114,8 +116,7 @@ export let serviciosAPI = {
         marca: p.brand,
         codigoBarras: p.barcode,
         cantidad: p.cantidad,
-        fechaCaducidad: p.expirationDate,
-        url_image: p.url_image
+        fechaCaducidad: p.fechaCaducidad
       });
     }
     return resultado;
@@ -139,10 +140,9 @@ export let serviciosAPI = {
       brand: p.marca,
       barcode: codigoBarras,
       cantidad: cantidad,
-      expirationDate: fechaCaducidad,
-      url_image: p.url_image
+      fechaCaducidad: fechaCaducidad
     });
-    let resultado = await hacerPeticion('/api/productos', { method: 'POST', body: body });
+    let resultado = await hacerPeticion('/api/products', { method: 'POST', body: body });
     return resultado;
   },
 
@@ -164,20 +164,19 @@ export let serviciosAPI = {
       brand: p.marca,
       barcode: codigoBarras,
       cantidad: cantidad,
-      expirationDate: fechaCaducidad,
-      url_image: p.url_image
+      fechaCaducidad: fechaCaducidad
     });
-    let resultado = await hacerPeticion('/api/productos/' + id, { method: 'PUT', body: body });
+    let resultado = await hacerPeticion('/api/products/' + id, { method: 'PUT', body: body });
     return resultado;
   },
 
   eliminarProducto: async function (id) {
-    let resultado = await hacerPeticion('/api/productos/' + id, { method: 'DELETE' });
+    let resultado = await hacerPeticion('/api/products/' + id, { method: 'DELETE' });
     return resultado;
   },
 
   obtenerProductoPorCodigoBarras: async function (barcode) {
-    let p = await hacerPeticion('/api/alimentos/' + barcode, { method: 'GET' });
+    let p = await hacerPeticion('/api/food/' + barcode, { method: 'GET' });
     if (!p) {
       return null;
     }
@@ -185,14 +184,12 @@ export let serviciosAPI = {
       nombre: p.name,
       marca: p.brand,
       codigoBarras: p.barcode,
-      cantidad: p.cantidad,
-      url_image: p.url_image
+      cantidad: p.cantidad
     };
   },
 
-  // --- RECETAS ---
-  obtenerRecetasSugeridas: async function () {
-    let res = await hacerPeticion('/api/recetas/sugeridas', { method: 'GET' });
+  obtenerRecetasSugeridas: async function (ingrediente) {
+    let res = await hacerPeticion('/api/recipes/ingredients?ingredient=' + ingrediente, { method: 'GET' });
     let meals = res.meals;
     if (!meals) {
       meals = [];
@@ -200,44 +197,40 @@ export let serviciosAPI = {
     let resultado = [];
     for (let i = 0; i < meals.length; i++) {
       let r = meals[i];
-      let ingredientes = r.ingredientes;
-      if (!ingredientes) {
-        ingredientes = [];
+      
+      // Recopilar ingredientes que no estén vacíos
+      let ingredientes = [];
+      for (let j = 1; j <= 20; j++) {
+        let ing = r['strIngredient' + j];
+        let measure = r['strMeasure' + j];
+        if (ing && ing.trim() !== "") {
+          if (measure) {
+            ingredientes.push(measure + ' de ' + ing);
+          } else {
+            ingredientes.push(ing);
+          }
+        }
       }
+
       resultado.push({
-        id: r.id,
-        titulo: r.titulo,
-        instrucciones: r.pasos,
-        imagen: r.imagen,
+        id: r.idMeal,
+        titulo: r.strMeal,
+        instrucciones: r.strInstructions,
+        imagen: r.strMealThumb,
         ingredientes: ingredientes,
-        tiempo: r.tiempo,
-        dificultad: r.dificultad
+        tiempo: "N/A",
+        dificultad: "N/A"
       });
     }
     return resultado;
   },
 
-  obtenerDetalleReceta: async function (id) {
-    let r = await hacerPeticion('/api/recetas/' + id, { method: 'GET' });
-    let ingredientes = r.ingredientes;
-    if (!ingredientes) {
-      ingredientes = [];
-    }
-    return {
-      id: r.id,
-      titulo: r.titulo,
-      instrucciones: r.pasos,
-      imagen: r.imagen,
-      ingredientes: ingredientes,
-      tiempo: r.tiempo,
-      dificultad: r.dificultad
-    };
-  },
 
-  // --- PANEL DE ADMINISTRACIÓN ---
-  // Obtiene la lista de usuarios y comprueba si cada uno es admin
+
+  // --- ADMIN ---
+  // trae los usuarios y chequea a manopla quien es admin (super ineficiente pero anda)
   obtenerUsuariosAdmin: async function () {
-    let lista = await hacerPeticion('/api/usuarios', { method: 'GET' });
+    let lista = await hacerPeticion('/api/users/admin', { method: 'GET' });
     let resultado = [];
     for (let i = 0; i < lista.length; i++) {
       let u = lista[i];
@@ -252,14 +245,20 @@ export let serviciosAPI = {
         id: u.id,
         usuario: u.username,
         correo: u.email,
-        esAdministrador: esAdmin
+        esAdministrador: esAdmin,
+        estaActivo: u.enabled
       });
     }
     return resultado;
   },
 
+  activarUsuarioAdmin: async function (id) {
+    let resultado = await hacerPeticion('/api/users/admin/' + id, { method: 'POST' });
+    return resultado;
+  },
+
   eliminarUsuarioAdmin: async function (id) {
-    let resultado = await hacerPeticion('/api/usuarios/' + id, { method: 'DELETE' });
+    let resultado = await hacerPeticion('/api/users/admin/' + id, { method: 'DELETE' });
     return resultado;
   }
 };

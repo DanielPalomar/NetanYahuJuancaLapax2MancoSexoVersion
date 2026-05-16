@@ -210,7 +210,6 @@ function AnadirProducto() {
                 type="date"
                 value={producto.fechaCaducidad}
                 onChange={manejarInput}
-                required
                 className="w-full p-4 bg-emerald-50/50 border border-emerald-200 rounded-xl outline-none"
               />
             </div>

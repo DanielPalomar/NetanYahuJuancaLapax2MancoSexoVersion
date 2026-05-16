@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import com.grupo4.foodappback.dto.ProductResponse;
 import com.grupo4.foodappback.entities.Product;
 import com.grupo4.foodappback.entities.User;
 import com.grupo4.foodappback.exceptions.BusinessException;
@@ -25,7 +26,8 @@ public class ProductService {
     @Autowired
     private IUserRepository userRepository; 
 
-
+    @Autowired
+    private OpenFoodFactsService openFoodFactsService;
 
 
     // Buscar un producto en la BD a partir de su ID: sin authentication pq no lo necesitamos en el cuerpo:
@@ -51,7 +53,7 @@ public class ProductService {
     // ENDPOINTS SOLO PARA USERLOG PROPIETARIO O ADMIN:
     //================================================
 
-    // Actualizar un producto de la BD: solo puede actualizar su propietario o un admin: --- SOLO CAMBIAR NOMBRE, MARCA, PESO ---
+    // Actualizar un producto de la BD: solo puede actualizar su propietario o un admin: --- SOLO CAMBIAR NOMBRE, MARCA, CANTIDAD, FECHA ---
     public Product updateProduct(Long productId, Product p, Authentication authentication) {
         User userLog = getAuthenticatedUser(authentication);
         Product product = productRepository.findById(productId).orElseThrow(() -> new RuntimeException("Producto no encontrado"));
@@ -63,8 +65,10 @@ public class ProductService {
         }
         product.setName(p.getName());  
         product.setBrand(p.getBrand());  
-        product.setCantidad(p.getCantidad());  
-        product.setExpirationDate(p.getExpirationDate());
+        // CAMBIO: ahora se actualiza cantidad y fechaCaducidad en vez de weight
+        product.setCantidad(p.getCantidad());
+        product.setFechaCaducidad(p.getFechaCaducidad());
+        // product.setWeight(p.getWeight());  // COMENTADO - campo eliminado de la BD  
 
        return productRepository.save(product);
     }
@@ -84,10 +88,63 @@ public class ProductService {
     // Listar todos los productos solo si userLog es ADMIN:
     //====================================================
 
-    // Listar todos los productos del usuario logueado:
     public List<Product> getProducts(Authentication authentication) {
         User userLog = getAuthenticatedUser(authentication);
-        return productRepository.findByUserId(userLog.getId());
+        
+        if (userLog.getRoles().stream().anyMatch(role -> role.getName().equals("ROLE_ADMIN"))) {
+            return productRepository.findAll();
+        } else {
+            return productRepository.findByUserId(userLog.getId());
+        }
+    }   
+
+    
+
+    // ---------------------- INTEGRACIÓN OPENFOODFACTS (IA) ----------------------
+
+    /**
+     * Busca producto por barcode en DB; si no existe, lo trae de OpenFoodFacts
+     * y lo MUESTRA EN EL FORMULARIO usando solo los campos que necesitamos.
+     */
+
+    public Product getProductByBarcode(String barcode) {      
+        
+        // Buscar en la DB:
+        Product product = productRepository.findByBarcode(barcode).orElse(null);
+        if (product != null) return product;
+
+        // Consultar OpenFoodFacts y metemos la respuesta en un dto tipo ProductResponse:
+        ProductResponse response = openFoodFactsService.getProductByBarcode(barcode);
+        if (response == null || response.getProduct() == null) {
+            throw new RuntimeException("Producto no encontrado ni en la base de datos ni en OpenFoodFacts");
+        }
+
+       // Mapear solo los campos q necesitamos:
+        ProductResponse.Product p = response.getProduct();
+        Product newProduct = new Product();
+        newProduct.setBarcode(barcode);
+        newProduct.setName(p.getProductName());
+        newProduct.setBrand(p.getBrands());
+        // CAMBIO: campos eliminados de la BD (código muerto)
+        // newProduct.setUrl_image(p.getImageUrl());
+        // newProduct.setWeight(parseWeight(p.getQuantity())); // parsea "100 g" → 100.0f
+        //newProduct.setUser(userLog);
+                
+        return newProduct;
     }
+
+    /**
+     * Convierte el campo quantity de OpenFoodFacts a float (solo números)
+     * COMENTADO - ya no se usa weight en la BD
+     */
+    // private Float parseWeight(String quantity) {
+    //     if (quantity == null) return null;
+    //     try {
+    //         String num = quantity.replaceAll("[^\\d.]", ""); // elimina unidades
+    //         return Float.parseFloat(num);
+    //     } catch (NumberFormatException e) {
+    //         return null;
+    //     }
+    // }
 }
 

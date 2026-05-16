@@ -1,32 +1,34 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, Clock, Utensils } from 'lucide-react';
 import { serviciosAPI } from '../services/servicios';
 
 function DetalleReceta() {
   const { id } = useParams();
   const navegar = useNavigate();
-  const [receta, setReceta] = useState(null);
+  const location = useLocation();
+  const [receta, setReceta] = useState(location.state ? location.state.receta : null);
   const [productos, setProductos] = useState([]);
 
   //cargamos datos
   useEffect(() => {
     const cargarDatos = async () => {
       try {
-        const [detalleReceta, despensa] = await Promise.all([
-          serviciosAPI.obtenerDetalleReceta(id),
-          serviciosAPI.obtenerDespensa()
-        ]);
-        setReceta(detalleReceta);
+        if (!receta) {
+          // Si no hay receta en el state (por recargar la página), volvemos
+          navegar('/recetas');
+          return;
+        }
+
+        const despensa = await serviciosAPI.obtenerDespensa();
         setProductos(despensa || []);
       } catch (err) {
         console.error("Error:", err.message);
-        navegar('/recetas');
       }
     };
 
-    if (id) cargarDatos();
-  }, [id, navegar]);
+    cargarDatos();
+  }, [receta, navegar]);
 
   if (!receta) {
     return <div className="min-h-screen flex items-center justify-center italic text-gray-400">Cargando...</div>; //mientras carga

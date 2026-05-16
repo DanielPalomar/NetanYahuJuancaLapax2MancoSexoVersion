@@ -28,9 +28,11 @@ import jakarta.validation.Valid;
 //CONTROLLER PARA TODOS LOS ROLES: MANEJA LOS PRODUCTOS DEL USER LOGUEADO, SOLO EN LA -- BD -- Y A PARTIR DE SU ID
 //===================================================================================================================
 
-@CrossOrigin(origins="*", originPatterns = "*")   
+@CrossOrigin(origins="http://localhost:5500", originPatterns = "*")   
+
 @RestController
-@RequestMapping("/api/productos")
+@RequestMapping("/api/products")
+
 public class ProductController {
     
     @Autowired
@@ -63,8 +65,8 @@ public class ProductController {
     
     // modificar producto de la BD a partir de su id: USER solo los suyos, y ADMIN todos:
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateProduct(@PathVariable Long id,
-                                 @Valid @RequestBody Product product,
+    public ResponseEntity<?> updateProduct(@Valid @PathVariable Long id,
+                                 @RequestBody Product product,
                                  Authentication authentication,
                                  BindingResult result) {
         if (result.hasErrors()){

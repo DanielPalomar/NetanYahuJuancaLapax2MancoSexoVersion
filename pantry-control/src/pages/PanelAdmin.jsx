@@ -4,6 +4,7 @@ import { serviciosAPI } from '../services/servicios';
 
 function PanelAdmin() {
   let [usuarios, setUsuarios] = useState([]);
+  let usuarioLogueado = localStorage.getItem('username');
   let [nuevoNombre, setNuevoNombre] = useState('');
   let [nuevoApellido, setNuevoApellido] = useState('');
   let [nuevoUsuario, setNuevoUsuario] = useState('');
@@ -60,6 +61,18 @@ function PanelAdmin() {
     });
   }
 
+  function toggleActivo(id) {
+    serviciosAPI.activarUsuarioAdmin(id).then(function () {
+      serviciosAPI.obtenerUsuariosAdmin().then(function (data) {
+        setUsuarios(data || []);
+      }).catch(function () {
+        console.log('error');
+      });
+    }).catch(function () {
+      alert('Error al cambiar estado');
+    });
+  }
+
 
   // FILAS DE LA TABLANS
   let filasTabla = [];
@@ -76,6 +89,19 @@ function PanelAdmin() {
         <td className="px-4 py-3 font-semibold text-slate-800">{u.usuario}</td>
         <td className="px-4 py-3 text-slate-600">{u.correo}</td>
         <td className="px-4 py-3"><span className={claseRol}>{textoRol}</span></td>
+        <td className="px-4 py-3">
+          <button
+            onClick={function (userId) { return function () { toggleActivo(userId); }; }(u.id)}
+            disabled={u.usuario === usuarioLogueado}
+            className={`px-3 py-1 rounded text-xs font-bold transition-colors ${
+              u.estaActivo 
+                ? 'bg-amber-100 text-amber-700 hover:bg-amber-200' 
+                : 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200'
+            } disabled:opacity-30 disabled:cursor-not-allowed`}
+          >
+            {u.estaActivo ? 'Desactivar' : 'Activar'}
+          </button>
+        </td>
         <td className="px-4 py-3 text-right">
           <button
             onClick={function (userId) { return function () { eliminarUsuario(userId); }; }(u.id)}
@@ -130,6 +156,7 @@ function PanelAdmin() {
                     <th className="px-4 py-2">Usuario</th>
                     <th className="px-4 py-2">Email</th>
                     <th className="px-4 py-2">Rol</th>
+                    <th className="px-4 py-2">Estado</th>
                     <th className="px-4 py-2 text-right">Acciones</th>
                   </tr>
                 </thead>
