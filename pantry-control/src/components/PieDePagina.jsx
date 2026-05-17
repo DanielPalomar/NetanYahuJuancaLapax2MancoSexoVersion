@@ -1,5 +1,5 @@
 /**
- * FOOTER "LAPA'S STUDIO" 
+ * FOOTER MarkFoods'Study
  */
 
 //iconos de la biblioteca react icons

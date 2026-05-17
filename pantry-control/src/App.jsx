@@ -16,7 +16,6 @@ import NoEncontrado from './pages/NoEncontrado';
 
 /*Se usa un prop para transfirir informacion entre componentes y en este caso lo uso para pasar los hijos */
 function RutaPrivada(props) {
-  // Aquí 'props.children' representa todo lo que envuelves dentro de <RutaPrivada>...</RutaPrivada>
   //verifica si hay un token para mostrar o no
   let token = localStorage.getItem('token');
   if (token) return props.children;
@@ -94,7 +93,7 @@ function Inicio() {
               La clave es la visibilidad constante de tus productos.
             </p>
 
-            {/* Barras de progreso con más espacio entre ellas (gap-10) */}
+            {/* Barras de progreso  */}
             <div className="flex flex-col gap-4 w-full max-w-md">
               <div className="flex flex-col">
                 <div className="flex justify-between text-xs font-bold text-slate-500 mb-3 uppercase tracking-wider">

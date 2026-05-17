@@ -1,17 +1,20 @@
 import { Link, useNavigate } from "react-router-dom";
 import { LogOut, UserPlus, UserCircle, Sprout } from "lucide-react";
-// Porno y putas? (jose elimino o esto o lo dejo como huellita del live share kjasjkdashjkdajosdiasojdoisajdoisa)
+// componente
 function BarraNavegacion() {
   const navigate = useNavigate();
+  //obtenemos token
   const token = localStorage.getItem("token");
   const esAdmin = localStorage.getItem("esAdministrador") === "true";
 
+  //limpiamos token 
   function cerrarSesion() {
     localStorage.clear();
     navigate("/login");
   }
 
   return (
+    //barra de navegacion de la pagina
     <nav className="w-full border-b border-slate-100 bg-white/90 backdrop-blur-sm sticky top-0 z-50">
       <div className="w-full px-8 md:px-12 h-20 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-3 group">
@@ -37,6 +40,7 @@ function BarraNavegacion() {
             >
               Recetas
             </Link>
+            {/* En caso de ser admin */}
             {esAdmin && (
               <Link
                 to="/admin"
@@ -47,6 +51,7 @@ function BarraNavegacion() {
             )}
           </div>
         )}
+        {/* sin tiene token se muestra la opcionde de cerrar sesion*/}
         <div className="flex items-center gap-6">
           {token ? (
             <button

@@ -24,17 +24,17 @@ function TarjetaProducto(props) {
           </div>
         </div>
 
-        {/* El nombre del producto con la primera letra en mayúscula */}
+        {/* nombre con primera letra en mayúscula */}
         <h3 className="text-xl font-bold text-slate-800 mb-0.5 capitalize">
           {producto.nombre}
         </h3>
 
-        {/* Mostramos la marca del producto */}
+        {/* Mostramos marca   */}
         <p className="text-xs text-slate-400 font-bold uppercase mb-2">
           {producto.marca}
         </p>
 
-        {/* La fecha en la que caduca el producto */}
+        {/* La fecha en la que caduca el producto  en caso de no caducar se muestra un texto predefinido*/}
         <p className="text-sm text-slate-500 font-medium">
           Caduca el: <span className="text-slate-700">{producto.fechaCaducidad || 'Sin fecha'}</span>
         </p>
