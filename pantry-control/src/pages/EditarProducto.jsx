@@ -14,7 +14,7 @@ function EditarProducto() {
   let [fechaCaducidad, setFechaCaducidad] = useState('');
   let [cantidad, setCantidad] = useState(1);
 
-  // Esto se ejecuta al cargar la pagina para traer los datos del producto seleccionado
+  // Esto se ejecuta al cargar la pagina para traer los datos del producto seleccionado tipo fetch
   useEffect(() => {
     serviciosAPI.obtenerDespensa().then(function (productos) {
       for (let i = 0; i < productos.length; i++) {
@@ -29,7 +29,7 @@ function EditarProducto() {
         }
       }
     }).catch(function (error) {
-      console.error('Error al cargar datos:', error); //error por consola cool
+      console.error('Error al cargar datos:', error); //error por consola 
     });
   }, [id]); // el "id" aqui es para que se vuelva a ejecutar si el id cambia o algo
 
@@ -69,7 +69,6 @@ function EditarProducto() {
         </button>
 
         {/* Marcos corrige esto que creo que era de los que me da problemas  */}
-        {/* OK agora lo miro!!!!!!!!  */}
         <div className="bg-white p-8 rounded-[2.5rem] border border-emerald-100 shadow-xl shadow-emerald-200/50">
 
           <div className="flex flex-col items-center mb-8">

@@ -1,20 +1,11 @@
-/**
- * ugh, la api central. si esto se rompe, se rompe todo.
- * literalmente hace de puente con el backend en spring boot.
- */
 let URL_API = 'http://localhost:9090'; // recemos para q siga levantado en el 9090
 
-/**
- * la vieja confiable. le pasas la ruta y reza para que devuelva un 200 ok.
- * maneja el token y los errores comunes para no andar copiando y pegando esto mil veces.
- */
 async function hacerPeticion(ruta, opciones) {
-  // Si no se pasan opciones, usar un objeto vacío para evitar errores
   if (!opciones) {
     opciones = {};
   }
 
-  // Sacar el token JWT del local storage (lo que guardamos cuando el profe hace login)
+  // Sacar el token JWT del local storage 
   let token = localStorage.getItem('token');
 
   // Headers por defecto, porque obvio todo es JSON hoy en día
@@ -36,14 +27,14 @@ async function hacerPeticion(ruta, opciones) {
   }
 
   try {
-    // el fetch de toda la vida apuntando a spring boot
+    // el fetch apuntando a spring boot
     let respuesta = await fetch(URL_API + ruta, {
       method: opciones.method,
       headers: headers,
       body: opciones.body
     });
 
-    // si da error (ya veo venir el 500 de java)
+    // si da error (
     if (!respuesta.ok) {
       // Intentar leer el mensaje de error del backend
       let errorData = {};
@@ -59,8 +50,7 @@ async function hacerPeticion(ruta, opciones) {
       throw new Error(mensaje);
     }
 
-    // Leer la respuesta como texto y convertir a JSON
-    // Se hace así porque algunas respuestas (como DELETE) vienen vacías
+    // Lee la respuesta y devuelve un JSON
     let texto = await respuesta.text();
     if (texto) {
       return JSON.parse(texto);
@@ -87,7 +77,7 @@ export let serviciosAPI = {
     return resultado;
   },
 
-  // --- REGISTRAR ---
+  // --- REGISTRo ---
   registrarUsuario: async function (datos) {
     let body = JSON.stringify({
       name: datos.nombre,
@@ -108,8 +98,7 @@ export let serviciosAPI = {
     let resultado = [];
     for (let i = 0; i < lista.length; i++) {
       let p = lista[i];
-      // traduccion simple ya que todo está en ingles
-      // y el frontend usa nombres en español (nombre, marca, codigoBarras...)
+      // traduccion simple ya que todo el back está en ingles es como un diccionario
       resultado.push({
         id: p.id,
         nombre: p.name,
@@ -122,6 +111,7 @@ export let serviciosAPI = {
     return resultado;
   },
 
+  //insertar productos 
   anadirProducto: async function (p) {
     let cantidad = parseInt(p.cantidad);
     if (!cantidad) {
@@ -190,18 +180,13 @@ export let serviciosAPI = {
 
   obtenerRecetasSugeridas: async function (ingrediente) {
     let res = await hacerPeticion('/api/recipes/ingredients?ingredient=' + ingrediente, { method: 'GET' });
-    
-    // Si no hay respuesta, devolvemos lista vacía para que no pete el .map()
-    if (!res || !res.meals) {
-      return [];
-    }
-    
     let meals = res.meals;
+    if (!meals) {
+      meals = [];
+    }
     let resultado = [];
     for (let i = 0; i < meals.length; i++) {
       let r = meals[i];
-
-      // Recopilar ingredientes que no estén vacíos
       let ingredientes = [];
       for (let j = 1; j <= 20; j++) {
         let ing = r['strIngredient' + j];
@@ -231,21 +216,17 @@ export let serviciosAPI = {
 
 
   // --- ADMIN ---
-  // trae los usuarios y chequea a manopla quien es admin (super ineficiente pero anda)
+  // trae los usuarios y revisa quien es admin
   obtenerUsuariosAdmin: async function () {
     let lista = await hacerPeticion('/api/users/admin', { method: 'GET' });
-    if (!lista) return [];
-    
     let resultado = [];
     for (let i = 0; i < lista.length; i++) {
       let u = lista[i];
-      // Recorrer los roles del usuario para ver si tiene ROLE_ADMIN
+      // Recorrer los roles del usuario para ver si son admin
       let esAdmin = false;
-      if (u.roles) {
-        for (let j = 0; j < u.roles.length; j++) {
-          if (u.roles[j].name === 'ROLE_ADMIN') {
-            esAdmin = true;
-          }
+      for (let j = 0; j < u.roles.length; j++) {
+        if (u.roles[j].name === 'ROLE_ADMIN') {
+          esAdmin = true;
         }
       }
       resultado.push({

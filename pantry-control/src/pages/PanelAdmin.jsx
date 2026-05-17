@@ -12,6 +12,7 @@ function PanelAdmin() {
   let [nuevaContraseña, setNuevaContraseña] = useState('');
   let [nuevoEsAdmin, setNuevoEsAdmin] = useState(false);
 
+  //carga datos 
   useEffect(() => {
     serviciosAPI.obtenerUsuariosAdmin()
       .then((data) => {
@@ -22,6 +23,7 @@ function PanelAdmin() {
       });
   }, []);
 
+  //funcion para agregar usuarios
   function agregarUsuario(e) {
     e.preventDefault();
     serviciosAPI.registrarUsuario({
@@ -48,6 +50,7 @@ function PanelAdmin() {
     });
   }
 
+  //funcion para eliminar usuarios
   function eliminarUsuario(id) {
     if (!window.confirm('¿Eliminar?')) return;
     serviciosAPI.eliminarUsuarioAdmin(id).then(function () {
@@ -61,6 +64,7 @@ function PanelAdmin() {
     });
   }
 
+  //funcion para cambiar estado de usuario
   function toggleActivo(id) {
     serviciosAPI.activarUsuarioAdmin(id).then(function () {
       serviciosAPI.obtenerUsuariosAdmin().then(function (data) {
@@ -93,11 +97,10 @@ function PanelAdmin() {
           <button
             onClick={function (userId) { return function () { toggleActivo(userId); }; }(u.id)}
             disabled={u.usuario === usuarioLogueado}
-            className={`px-3 py-1 rounded text-xs font-bold transition-colors ${
-              u.estaActivo 
-                ? 'bg-amber-100 text-amber-700 hover:bg-amber-200' 
+            className={`px-3 py-1 rounded text-xs font-bold transition-colors ${u.estaActivo
+                ? 'bg-amber-100 text-amber-700 hover:bg-amber-200'
                 : 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200'
-            } disabled:opacity-30 disabled:cursor-not-allowed`}
+              } disabled:opacity-30 disabled:cursor-not-allowed`}
           >
             {u.estaActivo ? 'Desactivar' : 'Activar'}
           </button>
@@ -144,7 +147,7 @@ function PanelAdmin() {
             </form>
           </div>
 
-          {/* contenedor de la fakin tabla*/}
+          {/* contenedor de la tabla*/}
           <div className="flex-[2] bg-white border border-emerald-200 rounded overflow-hidden">
             <div className="px-4 py-3 border-b border-emerald-200 bg-emerald-50">
               <h2 className="font-bold text-emerald-900">Usuarios</h2>

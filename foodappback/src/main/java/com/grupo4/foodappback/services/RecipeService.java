@@ -16,7 +16,7 @@ public class RecipeService {
         this.recipeClient = recipeClient;
     }
 
-    // 🔹 Buscar recetas por ingrediente (lista básica)
+    // Buscar recetas por ingrediente (lista básica)
     public MealResponse getByIngredient(String ingredient) {
 
         MealResponse response = recipeClient.byIngredient(ingredient);
@@ -35,7 +35,7 @@ public class RecipeService {
         return response;
     }
 
-    // 🔹 Buscar receta completa por ID
+    // Buscar receta completa por ID
     public MealResponse getById(String id) {
         return recipeClient.byId(id);
     }

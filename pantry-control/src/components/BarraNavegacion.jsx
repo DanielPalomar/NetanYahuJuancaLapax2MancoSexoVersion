@@ -51,7 +51,7 @@ function BarraNavegacion() {
             )}
           </div>
         )}
-        {/* sin tiene token se muestra la opcionde de cerrar sesion*/}
+        {/* si tiene token se muestra la opcionde de cerrar sesion */}
         <div className="flex items-center gap-6">
           {token ? (
             <button

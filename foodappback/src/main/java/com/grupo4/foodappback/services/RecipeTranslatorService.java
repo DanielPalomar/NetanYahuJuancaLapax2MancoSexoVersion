@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import com.grupo4.foodappback.dto.Meal;
 import com.grupo4.foodappback.dto.MealResponse;
 
+/* une tanto el servicio de recetas como el de traducción para traducir las recetas */
 @Service
 public class RecipeTranslatorService {
 
@@ -23,48 +24,51 @@ public class RecipeTranslatorService {
     // Flujo completo: ingrediente → recetas completas → traducción
     public MealResponse getFullRecipesByIngredient(String ingredient) {
 
-        // 1. Traducir el ingrediente buscado al inglés para que la API externa lo entienda
-        String translatedIngredient = translationService.toEnglish(ingredient);
+        String translatedIngredient = translationService.toEnglish(ingredient); // Traduce el texto para despues buscar
+                                                                                // las recetas con el texto en Inglés.
 
-        // 2. Obtener recetas básicas por ese ingrediente
+        // 1. obtener recetas básicas
         MealResponse filtered = recipeService.getByIngredient(translatedIngredient);
 
         if (filtered == null || filtered.getMeals() == null) {
             return new MealResponse();
         }
 
-        // 3. Construir recetas completas y traducirlas
+        // 2. construir recetas completas
         List<Meal> fullMeals = filtered.getMeals()
                 .stream()
                 .limit(10)
                 .map(meal -> {
+
                     MealResponse detail = recipeService.getById(meal.getIdMeal());
 
-                    if (detail != null && detail.getMeals() != null && !detail.getMeals().isEmpty()) {
+                    if (detail != null &&
+                            detail.getMeals() != null &&
+                            !detail.getMeals().isEmpty()) {
+
                         Meal fullMeal = detail.getMeals().get(0);
+                        System.out.println(fullMeal.getStrMeal());
 
-                        // --- TRADUCCIÓN DE TÍTULO Y PREPARACIÓN ---
+                        // 3. traducir (si quieres)
                         if (fullMeal.getStrMeal() != null) {
-                            fullMeal.setStrMeal(translationService.toSpanish(fullMeal.getStrMeal()));
+                            System.out.println(fullMeal.getStrMeal().length());
+                            System.out.println(fullMeal.getStrMeal());
+                            fullMeal.setStrMeal(
+                                    translationService.toSpanish(fullMeal.getStrMeal())
+
+                );
                         }
+
                         if (fullMeal.getStrInstructions() != null) {
-                            fullMeal.setStrInstructions(translationService.toSpanish(fullMeal.getStrInstructions()));
+                            fullMeal.setStrInstructions(
+                                    translationService.toSpanish(fullMeal.getStrInstructions()));
                         }
-
-                        // --- TRADUCCIÓN DE INGREDIENTES (uno por uno para que el diccionario funcione) ---
-                        for (int i = 1; i <= 20; i++) {
-                            try {
-                                String ing = (String) fullMeal.getClass().getMethod("getStrIngredient" + i).invoke(fullMeal);
-                                if (ing != null && !ing.isBlank()) {
-                                    String traducido = translationService.toSpanish(ing);
-                                    fullMeal.getClass().getMethod("setStrIngredient" + i, String.class)
-                                            .invoke(fullMeal, traducido);
-                                }
-                            } catch (Exception e) { }
-                        }
-
+                        System.out.println("Texto... ¿traducido?");
+                        System.out.println("Meal traducido: " + fullMeal.getStrMeal());
+                        System.out.println("Instructiones traducidas: " + fullMeal.getStrInstructions());
                         return fullMeal;
                     }
+
                     return null;
                 })
                 .filter(m -> m != null)

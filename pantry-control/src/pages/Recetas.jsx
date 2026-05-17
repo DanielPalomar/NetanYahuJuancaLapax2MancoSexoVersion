@@ -15,14 +15,13 @@ function Recetas() {
         const productosDespensa = await serviciosAPI.obtenerDespensa();
         setProductos(productosDespensa || []);
 
-        // 2. Escoger un ingrediente de la despensa para buscar recetas
-        // Si no tiene nada, usamos un ingrediente por defecto (ej. 'pollo')
+        // coge los ingredientes por defecto es pollo
         let ingredienteABuscar = 'pollo';
         if (productosDespensa && productosDespensa.length > 0) {
-          ingredienteABuscar = productosDespensa[0].nombre; // Busca por el primer producto
+          ingredienteABuscar = productosDespensa[0].nombre; // Busca por el primer producto y se ordena por quien caduca primero
         }
 
-        // 3. Obtener recetas basadas en ese ingrediente
+        // Obtener recetas basadas en ese ingrediente
         const recetasSugeridas = await serviciosAPI.obtenerRecetasSugeridas(ingredienteABuscar);
         setRecetas(recetasSugeridas || []);
 

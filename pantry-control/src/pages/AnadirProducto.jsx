@@ -122,7 +122,7 @@ function AnadirProducto() {
           Registra un nuevo alimento en tu despensa
         </p>
 
-        {/* BOTÓN Y VISOR DE CÁMARA */}
+        {/* BOTÓN CÁMARA */}
         <button
           onClick={function () {
             setEscaneando(!escaneando);
@@ -138,7 +138,7 @@ function AnadirProducto() {
           <div id="visor" className="w-full h-full"></div>
         </div>
 
-        {/* FORMULARIO */}
+        {/* FORMULARIO  algunos campos pueden ser requeridos y otros no*/}
         <form onSubmit={guardar} className="space-y-6">
           <div>
             <label className="block text-xs font-bold text-emerald-900 uppercase mb-2">

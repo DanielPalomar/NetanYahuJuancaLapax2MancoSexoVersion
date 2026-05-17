@@ -26,15 +26,19 @@ public class JpaUserDetailsService implements UserDetailsService {
     @Autowired
     private IUserRepository repository;
 
-    /* Método que Spring Security llama automáticamente cuando un cliente (Postman) intenta autenticarse.
+    /*
+     * Método que Spring Security llama automáticamente cuando un cliente (Postman)
+     * intenta autenticarse.
      * - Cuando se hace login con username y contraseña, o
-     * - Cuando se envía Authorization: Bearer TOKEN     */
+     * - Cuando se envía Authorization: Bearer TOKEN
+     */
     @Transactional(readOnly = true)
     @Override
-    public UserDetails loadUserByUsername(String username) 
+    public UserDetails loadUserByUsername(String username)
             throws UsernameNotFoundException {
 
-        // Se busca el user en la BD por username (dato enviado desde Postman en el login):
+        // Se busca el user en la BD por username (dato enviado desde Postman en el
+        // login):
         Optional<User> userOptional = repository.findByUsername(username);
 
         // Si el usuario no existe, se lanza excepción:
@@ -45,15 +49,20 @@ public class JpaUserDetailsService implements UserDetailsService {
         // Pasamos el Optional a User:
         User user = userOptional.orElseThrow();
 
-        /* Se convierten los roles del user encontrado en la BD (por ejemplo, ROLE_USER) a una lista de 
-         * objetos GrantedAuthority. Estos roles son los que Spring usa para @PreAuthorize("hasRole('ADMIN')") */
+        /*
+         * Se convierten los roles del user encontrado en la BD (por ejemplo, ROLE_USER)
+         * a una lista de
+         * objetos GrantedAuthority. Estos roles son los que Spring usa
+         * para @PreAuthorize("hasRole('ADMIN')")
+         */
         List<GrantedAuthority> authorities = user.getRoles()
-                                        .stream()
-                                        .map(role -> new SimpleGrantedAuthority(role.getName()))
-                                        .collect(Collectors.toList());
+                .stream()
+                .map(role -> new SimpleGrantedAuthority(role.getName()))
+                .collect(Collectors.toList());
 
         /*
-         * Se devuelve un objeto UserDetails que Spring Security entiende. Usamos su clase aqui directamente:
+         * Se devuelve un objeto UserDetails que Spring Security entiende. Usamos su
+         * clase aqui directamente:
          * Parámetros:
          * - username: enviado desde Postman
          * - password: contraseña cifrada en BD
@@ -64,20 +73,12 @@ public class JpaUserDetailsService implements UserDetailsService {
          * - authorities: lista de roles del usuario en formato GrantedAuthority
          */
         return new org.springframework.security.core.userdetails.User(
-            user.getUsername(),
-            user.getPassword(),
-            user.isEnabled(),
-            true,
-            true,
-            true,
-            authorities
-        );
-        /*El UserDetails es el objeto que contiene:
-            👤 username
-            🔒 password
-            🟢 estado (enabled)
-            🛡️ roles (authorities)
-
-            👉 Es la representación del usuario que Spring Security entiende*/
+                user.getUsername(),
+                user.getPassword(),
+                user.isEnabled(),
+                true,
+                true,
+                true,
+                authorities);
     }
 }
