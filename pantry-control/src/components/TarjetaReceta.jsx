@@ -1,7 +1,5 @@
 
 function TarjetaReceta({ receta }) {
-  const tiempo = receta.tiempo || '50 min';
-
   return (
     <div className="flex flex-col h-full bg-white border border-gray-200 overflow-hidden shadow-sm rounded-xl">
       {/* Contenedor de Imagen  */}
@@ -12,9 +10,6 @@ function TarjetaReceta({ receta }) {
             alt={receta.titulo}
             className="w-full h-full object-cover"
           />
-          <div className="absolute top-2 left-2 bg-white/90 px-2 py-1 shadow-sm border border-gray-200 rounded-md">
-            <span className="text-[10px] uppercase tracking-widest font-bold text-gray-800">{tiempo}</span>
-          </div>
         </div>
       )}
 

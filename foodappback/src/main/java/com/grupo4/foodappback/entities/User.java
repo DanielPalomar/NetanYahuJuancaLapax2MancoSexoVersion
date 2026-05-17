@@ -20,7 +20,7 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
+
 import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
@@ -66,7 +66,7 @@ public class User {
     // RELACIONES
     // ===============
 
-    // relacion con la entidad Cart: (COMENTADO - código muerto)
+    // relacion con la entidad Cart: (código muerto)
     // @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval =
     // true)
     // @JsonManagedReference("user-cart")
@@ -105,14 +105,7 @@ public class User {
         enabled = true;
     }
 
-    /**
-     * Indica si el usuario es administrador:
-     * - NO se guarda en base de datos (@Transient), solo se usa durante el registro
-     * - No se devuelve en respuestas JSON
-     */
-    @Transient
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private boolean admin;
+
 
     // =========================
     // Getters y Setters
@@ -181,15 +174,9 @@ public class User {
         this.enabled = enabled;
     }
 
-    public boolean isAdmin() {
-        return admin;
-    }
 
-    public void setAdmin(boolean admin) {
-        this.admin = admin;
-    }
 
-    // (COMENTADO - código muerto de Cart)
+    // (muerto de Cart)
     // public List<Cart> getCarts() {
     // return carts;
     // }

@@ -190,14 +190,17 @@ export let serviciosAPI = {
 
   obtenerRecetasSugeridas: async function (ingrediente) {
     let res = await hacerPeticion('/api/recipes/ingredients?ingredient=' + ingrediente, { method: 'GET' });
-    let meals = res.meals;
-    if (!meals) {
-      meals = [];
+    
+    // Si no hay respuesta, devolvemos lista vacía para que no pete el .map()
+    if (!res || !res.meals) {
+      return [];
     }
+    
+    let meals = res.meals;
     let resultado = [];
     for (let i = 0; i < meals.length; i++) {
       let r = meals[i];
-      
+
       // Recopilar ingredientes que no estén vacíos
       let ingredientes = [];
       for (let j = 1; j <= 20; j++) {
@@ -231,14 +234,18 @@ export let serviciosAPI = {
   // trae los usuarios y chequea a manopla quien es admin (super ineficiente pero anda)
   obtenerUsuariosAdmin: async function () {
     let lista = await hacerPeticion('/api/users/admin', { method: 'GET' });
+    if (!lista) return [];
+    
     let resultado = [];
     for (let i = 0; i < lista.length; i++) {
       let u = lista[i];
       // Recorrer los roles del usuario para ver si tiene ROLE_ADMIN
       let esAdmin = false;
-      for (let j = 0; j < u.roles.length; j++) {
-        if (u.roles[j].name === 'ROLE_ADMIN') {
-          esAdmin = true;
+      if (u.roles) {
+        for (let j = 0; j < u.roles.length; j++) {
+          if (u.roles[j].name === 'ROLE_ADMIN') {
+            esAdmin = true;
+          }
         }
       }
       resultado.push({

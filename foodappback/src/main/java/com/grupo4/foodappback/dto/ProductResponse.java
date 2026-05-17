@@ -10,109 +10,67 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ProductResponse {
 
-    @JsonProperty("code")
-    private String code;
+  @JsonProperty("code")
+  private String code;
 
-    @JsonProperty("product")
-    private Product product;
+  @JsonProperty("product")
+  private Product product;
+
+  // getters y setters
+  public String getCode() {
+    return code;
+  }
+
+  public void setCode(String code) {
+    this.code = code;
+  }
+
+  public Product getProduct() {
+    return product;
+  }
+
+  public void setProduct(Product product) {
+    this.product = product;
+  }
+
+  // CLASE INTERNA:
+  // ===============
+  public static class Product {
+    @JsonProperty("product_name")
+    private String productName;
+
+    @JsonProperty("brands")
+    private String brands;
+
+    // campos eliminados de la BD
+    // @JsonProperty("image_url")
+    // private String imageUrl;
+
+    // @JsonProperty("quantity")
+    // private String quantity; // peso del producto, ej: "100 g"
 
     // getters y setters
-    public String getCode() { return code; }
-    public void setCode(String code) { this.code = code; }
-
-    public Product getProduct() { return product; }
-    public void setProduct(Product product) { this.product = product; }
-
-    // CLASE INTERNA:
-    //===============
-    public static class Product {
-        @JsonProperty("product_name")
-        private String productName;
-
-        @JsonProperty("brands")
-        private String brands;
-
-        // COMENTADO - campos eliminados de la BD (ya no se mapean a la entity)
-        // @JsonProperty("image_url")
-        // private String imageUrl;
-
-        // @JsonProperty("quantity")
-        // private String quantity; // peso del producto, ej: "100 g"
-
-        // getters y setters
-        public String getProductName() { return productName; }
-        public void setProductName(String productName) { this.productName = productName; }
-
-        public String getBrands() { return brands; }
-        public void setBrands(String brands) { this.brands = brands; }
-
-        // COMENTADO - getters/setters de campos eliminados
-        // public String getImageUrl() { return imageUrl; }
-        // public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
-
-        // public String getQuantity() { return quantity; }
-        // public void setQuantity(String quantity) { this.quantity = quantity; }
+    public String getProductName() {
+      return productName;
     }
-}
 
+    public void setProductName(String productName) {
+      this.productName = productName;
+    }
 
-/* ¿Por qué no usamos la entity Product ya existente? La clave es ésta:
-    👉 No estás “creando otra entity Product”, estás creando un DTO diferente para un propósito distinto
+    public String getBrands() {
+      return brands;
+    }
 
-🧠 1. Tienes dos “Product”, pero no son lo mismo
-🟦 Tu Product (entity):
-        Representa tu modelo de base de datos
-        Suele llevar anotaciones tipo @Entity
-        Tiene campos que tú decides (id, precio, usuario, etc.)
-🟨 Este ProductResponse.Product (DTO)
-        Representa cómo viene el JSON de una API externa (OpenFoodFacts)
-        Solo tiene los campos que vienen en esa API
-        No tiene nada que ver con tu base de datos
+    public void setBrands(String brands) {
+      this.brands = brands;
+    }
 
-📦 2. ¿Por qué se crea otra clase? Porque el JSON que recibes tiene esta forma:
-{
-  "code": "123456",
-  "product": {
-    "product_name": "Chocolate",
-    "brands": "Nestlé",
-    "image_url": "...",
-    "quantity": "100 g"
+    // getters/setters de campos eliminados
+    // public String getImageUrl() { return imageUrl; }
+    // public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
+
+    // public String getQuantity() { return quantity; }
+    // public void setQuantity(String quantity) { this.quantity = quantity; }
   }
 }
-👉 Fíjate: hay un objeto dentro de otro (product dentro de ProductResponse)
-
-Por eso necesitas: 
-private Product product;
-
-Y esa clase interna:
-public static class Product { ... }
-
-⚠️ 3. ¿Por qué NO usar tu entity directamente? Porque sería mala práctica. Mezclarías cosas distintas:
-❌ Problemas si usas tu entity:
-La API externa puede cambiar
-Tiene nombres distintos (product_name vs name)
-Puede traer datos que no quieres guardar
-Acoplas tu BD a una API externa 😬
-
-🔄 4. Lo correcto: usar DTO → Entity. El flujo bueno es:
-
-JSON (API externa)
-   ↓
-ProductResponse (DTO)
-   ↓
-Tu Product (Entity)
-   ↓
-Base de datos
-
-5. ¿Por qué la clase es interna? Por organización:
-
-ProductResponse.Product
-👉 Solo existe dentro de esa respuesta
-👉 No “contamina” tu modelo global
-
-🧾 Resumen claro
-✔️ No estás duplicando, estás separando responsabilidades
-✔️ DTO = datos externos (API)
-✔️ Entity = datos internos (BD)
-✔️ Se transforman entre sí 
-*/

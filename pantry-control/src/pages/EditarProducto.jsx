@@ -131,7 +131,7 @@ function EditarProducto() {
               <div className="flex flex-col gap-2 flex-1">
                 <label className="text-xs font-black uppercase text-emerald-800 ml-1">Fecha de Caducidad</label>
                 <input
-                  type="date" required
+                  type="date"
                   className="px-5 py-4 bg-emerald-50/50 border-2 border-emerald-100 rounded-2xl focus:outline-none focus:border-emerald-500 text-emerald-900 font-bold"
                   value={fechaCaducidad}
                   onChange={function (e) { setFechaCaducidad(e.target.value); }}

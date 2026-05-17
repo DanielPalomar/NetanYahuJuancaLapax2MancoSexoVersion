@@ -25,22 +25,37 @@ public class TranslationService {
     }
 
     // ======================
-    // CACHE (nivel básico pro)
+    // CACHE
     // ======================
     private final Map<String, String> cache = new ConcurrentHashMap<>();
 
     // ======================
     // DICCIONARIO LOCAL
     // ======================
-    private final Map<String, String> dictionary = Map.of(
-            "ternera", "beef",
-            "pollo", "chicken",
-            "cerdo", "pork",
-            "arroz", "rice",
-            "cebolla", "onion",
-            "tomate", "tomato",
-            "ajo", "garlic",
-            "merluza", "hake"
+    private final Map<String, String> dictionary = Map.ofEntries(
+            Map.entry("pollo", "chicken"),
+            Map.entry("arroz", "rice"),
+            Map.entry("ternera", "beef"),
+            Map.entry("cerdo", "pork"),
+            Map.entry("tomate", "tomato"),
+            Map.entry("cebolla", "onion"),
+            Map.entry("ajo", "garlic"),
+            Map.entry("merluza", "hake"),
+            Map.entry("patata", "potato"),
+            Map.entry("aceite", "oil"),
+            Map.entry("huevo", "egg"),
+            Map.entry("leche", "milk"),
+            Map.entry("pan", "bread"),
+            Map.entry("sal", "salt"),
+            Map.entry("pimienta", "pepper"),
+            Map.entry("carne", "meat"),
+            Map.entry("pescado", "fish"),
+            Map.entry("pasta", "pasta"),
+            Map.entry("queso", "cheese"),
+            Map.entry("harina", "flour"),
+            Map.entry("azucar", "sugar"),
+            Map.entry("mantequilla", "butter"),
+            Map.entry("agua", "water")
     );
 
     // ======================
@@ -80,8 +95,18 @@ public class TranslationService {
                 return dictValue;
             }
         }
+        // Búsqueda inversa: inglés → español
+        if (from.equals("en") && to.equals("es")) {
+            for (Map.Entry<String, String> entry : dictionary.entrySet()) {
+                if (entry.getValue().equals(normalized)) {
+                    cache.put(key, entry.getKey());
+                    return entry.getKey();
+                }
+            }
+        }
 
-        // 3. Si el texto supera el límite de la API, dividir en trozos y traducir cada uno:
+        // 3. Si el texto supera el límite de la API, dividir en trozos y traducir cada
+        // uno:
         String result;
         if (text.length() > LIMITE_API) {
             result = translateLong(text, from, to);
@@ -163,8 +188,8 @@ public class TranslationService {
                     .block();
 
             if (response == null ||
-                response.getResponseData() == null ||
-                response.getResponseData().getTranslatedText() == null) {
+                    response.getResponseData() == null ||
+                    response.getResponseData().getTranslatedText() == null) {
                 return text; // fallback seguro
             }
 

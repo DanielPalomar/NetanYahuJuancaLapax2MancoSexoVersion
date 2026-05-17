@@ -13,20 +13,25 @@ import io.jsonwebtoken.Jwts;
  */
 
 public class TokenJwtConfig {
-    
-    /* Clave secreta para FIRMAR LOS TOKENS JWT:
+
+    /*
+     * Clave secreta para FIRMAR LOS TOKENS JWT:
      * - Se usa para CREAR y validar el token
      * - Nunca debe exponerse en producción
      *
-     * Postman no necesita esta clave directamente, pero es imprescindible para que Spring valide los tokens.     */
+     * Postman no necesita esta clave directamente, pero es imprescindible para que
+     * Spring valide los tokens.
+     */
     public static final SecretKey SECRET_KEY = Jwts.SIG.HS256.key().build();
 
-    // Prefijo que debe enviar Postman en el header Authorization -> En Postman se usa el prefijo BEARER, q indica q el token es tipo JWT:    
+    // Prefijo que debe enviar Postman en el header Authorization -> En Postman se
+    // usa el prefijo BEARER, q indica q el token es tipo JWT:
     public static final String PREFIX_TOKEN = "Bearer ";
 
     // Nombre del HEADER donde Postman debe enviar el token:
     public static final String HEADER_AUTHORIZATION = "Authorization";
 
-    // Tipo de contenido que Postman debe enviar al hacer POST /login o POST /api/users/register: Content-Type: application/json
+    // Tipo de contenido que Postman debe enviar al hacer POST /login o POST
+    // /api/users/register: Content-Type: application/json
     public static final String CONTENT_TYPE = "application/json";
 }

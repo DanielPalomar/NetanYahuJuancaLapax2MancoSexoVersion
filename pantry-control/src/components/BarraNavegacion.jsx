@@ -20,7 +20,7 @@ function BarraNavegacion() {
             className="text-emerald-500 transition-transform group-hover:scale-110"
           />
           <span className="text-xl font-bold tracking-tight text-slate-800">
-            MarkFood
+            Tu despensa
           </span>
         </Link>
         {token && (

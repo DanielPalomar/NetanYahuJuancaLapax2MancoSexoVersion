@@ -223,7 +223,7 @@ function AnadirProducto() {
           </button>
         </form>
       </div>
-    </div>
+    </div >
   );
 }
 

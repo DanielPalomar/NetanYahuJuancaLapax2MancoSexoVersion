@@ -19,8 +19,18 @@ function Ingreso() {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-emerald-50 px-4">
-      <div className="w-full max-w-md bg-white p-10 rounded-[2rem] shadow-sm border border-emerald-100">
+    <div className="relative flex items-center justify-center min-h-screen px-4 overflow-hidden">
+      {/* Fondo con imagen y desenfoque */}
+      <div 
+        className="absolute inset-0 z-0 bg-cover bg-center"
+        style={{ 
+          backgroundImage: 'url("https://static.vecteezy.com/system/resources/previews/009/706/107/non_2x/top-view-of-healthy-food-background-with-copy-space-healthy-food-concept-with-fresh-vegetables-photo.jpg")',
+          filter: 'blur(10px)',
+          transform: 'scale(1.1)'
+        }}
+      />
+
+      <div className="relative z-20 w-full max-w-md bg-white p-10 rounded-[2rem] shadow-sm border border-emerald-100">
         <div className="text-center mb-8">
           <h2 className="text-3xl font-bold text-emerald-950 mb-2 tracking-tight">Bienvenido</h2>
           <p className="text-emerald-600/80">Accede a tu despensa para continuar</p>

@@ -33,12 +33,12 @@ function Inicio() {
     <div className="w-full flex flex-col bg-white">
 
       {/* contenido principal y subtitulo*/}
-      <section className="w-full flex flex-col items-center justify-center pt-40 pb-32 px-6 bg-gradient-to-b from-emerald-50 to-white">
+      <section className="w-full flex flex-col items-center justify-center pt-20 pb-16 px-6 bg-gradient-to-b from-emerald-50 to-white">
         <div className="w-full max-w-6xl flex flex-col items-center text-center">
-          <h1 className="text-7xl md:text-8xl font-black text-emerald-950 mb-10 tracking-tighter leading-tight">
-            MarkFood
+          <h1 className="text-7xl md:text-8xl font-black text-emerald-950 mb-4 tracking-tighter leading-tight">
+            Tu despensa
           </h1>
-          <p className="text-xl md:text-2xl text-slate-600 mb-16 leading-relaxed max-w-3xl">
+          <p className="text-xl md:text-2xl text-slate-600 mb-8 leading-relaxed max-w-3xl">
             Gestiona tu inventario evita que los alimentos caduquen con un solo clic.
           </p>
 
@@ -67,8 +67,8 @@ function Inicio() {
       </section>
 
       {/* Section con el contenido que va a aparecer en el centro de la pagina */}
-      <section className="w-full py-32 px-6 md:px-10 flex justify-center">
-        <div className="w-full max-w-6xl flex flex-col md:flex-row items-center gap-24">
+      <section className="w-full py-12 px-6 md:px-10 flex justify-center">
+        <div className="w-full max-w-6xl flex flex-col md:flex-row items-center gap-12">
 
           {/* Contenedor de la Imagen */}
           <div className="flex-1 w-full max-w-xl">
@@ -81,21 +81,21 @@ function Inicio() {
 
           {/* Gráficas y texto de estas */}
           <div className="flex-1 flex flex-col w-full">
-            <div className="flex items-center gap-3 text-emerald-600 font-bold uppercase text-sm tracking-[0.2em] mb-8">
+            <div className="flex items-center gap-3 text-emerald-600 font-bold uppercase text-sm tracking-[0.2em] mb-2">
               <BarChart2 size={22} /> ESTADÍSTICAS DE AHORRO
             </div>
 
-            <h2 className="text-5xl font-extrabold text-slate-900 mb-8 tracking-tight leading-tight">
+            <h2 className="text-5xl font-extrabold text-slate-900 mb-2 tracking-tight leading-tight">
               Reduce el desperdicio al mínimo
             </h2>
 
-            <p className="text-lg text-slate-600 mb-12 leading-relaxed">
+            <p className="text-lg text-slate-600 mb-6 leading-relaxed">
               Nuestros usuarios reportan una reducción drástica en comida tirada.
               La clave es la visibilidad constante de tus productos.
             </p>
 
             {/* Barras de progreso con más espacio entre ellas (gap-10) */}
-            <div className="flex flex-col gap-10 w-full max-w-md">
+            <div className="flex flex-col gap-4 w-full max-w-md">
               <div className="flex flex-col">
                 <div className="flex justify-between text-xs font-bold text-slate-500 mb-3 uppercase tracking-wider">
                   <span>Antes</span>
@@ -136,7 +136,7 @@ function App() {
             <Route path="/login" element={<Ingreso />} />
             <Route path="/registro" element={<Registro />} />
             <Route path="/despensa" element={<RutaPrivada><Despensa /></RutaPrivada>} />
-            <Route path="/añadir" element={<RutaPrivada><AnadirProducto /></RutaPrivada>} />
+            <Route path="/anadir" element={<RutaPrivada><AnadirProducto /></RutaPrivada>} />
             <Route path="/editar/:id" element={<RutaPrivada><EditarProducto /></RutaPrivada>} />
             <Route path="/recetas" element={<RutaPrivada><Recetas /></RutaPrivada>} />
             <Route path="/recetas/:id" element={<RutaPrivada><DetalleReceta /></RutaPrivada>} />

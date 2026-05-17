@@ -56,12 +56,6 @@ public class UserService {
         // Añade el optionalRuleUser a la lista de roles del nuevo user:
         optionalRoleUser.ifPresent(roles::add);
 
-        // Si el user es admin, le asignamos también ese rol a su lista:
-        if (user.isAdmin()) {
-            Optional<Role> optionalRoleAdmin = roleRepository.findByName("ROLE_ADMIN");
-            optionalRoleAdmin.ifPresent(roles::add);
-        }
-
         user.setRoles(roles);
 
         // Se codifica la contraseña con el encoder que hemos puesto arriba. NUNCA se
@@ -153,17 +147,12 @@ public class UserService {
         }
 
         // Añadir roles al usuario:
-        Role roleAdmin = roleRepository.findByName("ROLE_ADMIN").orElseThrow();
         Role roleUser = roleRepository.findByName("ROLE_USER").orElseThrow();
 
         userFound.getRoles().clear();
         userFound.getRoles().add(roleUser);
 
-        // solo se puede poner ROLE_ADMIN al admin -> si queremos más admins tenemos que
-        // ir a la tabla
-        if (user.isAdmin()) {
-            userFound.getRoles().add(roleAdmin);
-        }
+
 
         return userRepository.save(userFound);
     }

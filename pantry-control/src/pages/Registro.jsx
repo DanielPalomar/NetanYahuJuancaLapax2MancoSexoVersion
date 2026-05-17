@@ -12,7 +12,6 @@ function Registro() {
   let [usuario, setUsuario] = useState("");
   let [correo, setCorreo] = useState("");
   let [contraseña, setContraseña] = useState("");
-  let [esAdmin, setEsAdmin] = useState(false);/**Luego borrarmos esto pa la version final lo pusimos porque nos tira problemas el incertar un admin por el tema de la contraseña hasheada*/
   let [error, setError] = useState(null);
 
   // to esto para actualizar cada campo 
@@ -31,10 +30,7 @@ function Registro() {
   function cambiarContraseña(e) {
     setContraseña(e.target.value);
   }
-  /* luego se borra */
-  function cambiarEsAdmin(e) {
-    setEsAdmin(e.target.checked);
-  }
+
 
   // Función que se ejecuta al enviar el formulario
   function enviar(e) {
@@ -46,7 +42,6 @@ function Registro() {
         usuario: usuario,
         correo: correo,
         contraseña: contraseña,
-        admin: esAdmin,
       })
       .then(function () {
         // Si todo sale bien, vamos al login
@@ -60,9 +55,19 @@ function Registro() {
 
   return (
 
-    <div className="flex items-center justify-center min-h-screen bg-emerald-50 px-4 py-8">
+    <div className="relative flex items-center justify-center min-h-screen px-4 py-8 overflow-hidden">
+      {/* Fondo con imagen y desenfoque */}
+      <div 
+        className="absolute inset-0 z-0 bg-cover bg-center"
+        style={{ 
+          backgroundImage: 'url("https://static.vecteezy.com/system/resources/previews/009/706/107/non_2x/top-view-of-healthy-food-background-with-copy-space-healthy-food-concept-with-fresh-vegetables-photo.jpg")',
+          filter: 'blur(10px)',
+          transform: 'scale(1.1)'
+        }}
+      />
+
       {/* Tarjeta blanca principal */}
-      <div className="w-full max-w-md bg-white p-10 rounded-[2rem] shadow-sm border border-emerald-100">
+      <div className="relative z-20 w-full max-w-md bg-white p-10 rounded-[2rem] shadow-sm border border-emerald-100">
         {/* Encabezado */}
         <div className="text-center mb-8">
           <h2 className="text-3xl font-bold text-emerald-950 mb-2 tracking-tight">
@@ -154,21 +159,7 @@ function Registro() {
               onChange={cambiarContraseña}
             />
           </div>
-          {/*Luego borrarmos esto pa la version final lo pusimos porque nos tira problemas el incertar un admin por el tema de la contraseña hasheada*/}
-          {/* Checkbox Admin */}
-          <div className="flex items-center space-x-3 p-3 bg-emerald-50/50 rounded-xl border border-emerald-100/50">
-            <input
-              type="checkbox"
-              id="admin"
-              className="w-5 h-5 text-emerald-600 border-emerald-300 rounded focus:ring-emerald-500"
-              checked={esAdmin}
-              onChange={cambiarEsAdmin}
-            />
-            <label htmlFor="admin" className="text-sm font-medium text-emerald-900 cursor-pointer">
-              Registrar como administrador
-            </label>
-          </div>
-          {/*Hasta aquí   */}
+
 
           {/* Botón */}
           <button

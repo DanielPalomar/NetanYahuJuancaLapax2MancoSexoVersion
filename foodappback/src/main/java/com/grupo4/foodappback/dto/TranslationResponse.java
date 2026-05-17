@@ -2,7 +2,6 @@ package com.grupo4.foodappback.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-// API Google Translator
 //============================================
 //dto que recibe la traducción de una RECETA. Usa una CLASE INTERNA que pasa la response a un String.
 
@@ -12,8 +11,13 @@ public class TranslationResponse {
     private ResponseData responseData;
 
     // getters y setters
-    public ResponseData getResponseData() { return responseData; }
-    public void setResponseData(ResponseData responseData) { this.responseData = responseData; }
+    public ResponseData getResponseData() {
+        return responseData;
+    }
+
+    public void setResponseData(ResponseData responseData) {
+        this.responseData = responseData;
+    }
 
     // Clase interna que representa como String la response obtenida:
     public static class ResponseData {
@@ -22,7 +26,12 @@ public class TranslationResponse {
         private String translatedText;
 
         // getters y setters
-        public String getTranslatedText() { return translatedText; }
-        public void setTranslatedText(String translatedText) { this.translatedText = translatedText; }
+        public String getTranslatedText() {
+            return translatedText;
+        }
+
+        public void setTranslatedText(String translatedText) {
+            this.translatedText = translatedText;
+        }
     }
 }

@@ -39,10 +39,7 @@ public class UserController {
         if (result.hasErrors()) {
             return validation(result);
         }
-        // ==========================================================
-        // esto se debe de borrar luego de crear un admin:
-        // user.setAdmin(false);
-        // ==========================================================
+
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(userService.registerUser(user));
