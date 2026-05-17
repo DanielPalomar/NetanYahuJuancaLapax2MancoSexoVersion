@@ -68,12 +68,12 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             // Para recibir los datos de JSON (API) o de form-urlencoded (Thymeleaf)
             if (request.getContentType() != null && request.getContentType().contains("application/json")) {
 
-                // 👉 Caso API: leer JSON del body
+                // Caso API: leer JSON del body
                 User loginRequest = new ObjectMapper().readValue(request.getInputStream(), User.class);
                 username = loginRequest.getUsername();
                 password = loginRequest.getPassword();
             } else {
-                // 👉 Caso formulario HTML
+                // Caso formulario HTML
                 username = request.getParameter("username");
                 password = request.getParameter("password");
             }

@@ -8,8 +8,6 @@ import java.util.Map;
 //============================================
 //dto que recibe los datos de -- UNA RECETA -- de la API TheMealDB : ingredientes, canbtidades, id, nombre, instrucciones y thumb (imagen)
 //recibe un JSON y lo convierte a Java con ayuda de @JsonProperty
-// Por ejemplo: @JsonProperty("idMeal") indica que el campo "idMeal" del JSON corresponde al String idMeal.
-// NO USA CLASE INTERNA
 
 public class Meal {
 
@@ -108,18 +106,17 @@ public class Meal {
     @JsonProperty("strMeasure20")
     private String strMeasure20;
 
-
     // Método para obtener todos los ingredientes con sus medidas en un Map
     public Map<String, String> getIngredientsList() {
         Map<String, String> ingredients = new LinkedHashMap<>();
-        String[] ing = {strIngredient1, strIngredient2, strIngredient3, strIngredient4, strIngredient5,
-                        strIngredient6, strIngredient7, strIngredient8, strIngredient9, strIngredient10,
-                        strIngredient11, strIngredient12, strIngredient13, strIngredient14, strIngredient15,
-                        strIngredient16, strIngredient17, strIngredient18, strIngredient19, strIngredient20};
-        String[] meas = {strMeasure1, strMeasure2, strMeasure3, strMeasure4, strMeasure5,
-                         strMeasure6, strMeasure7, strMeasure8, strMeasure9, strMeasure10,
-                         strMeasure11, strMeasure12, strMeasure13, strMeasure14, strMeasure15,
-                         strMeasure16, strMeasure17, strMeasure18, strMeasure19, strMeasure20};
+        String[] ing = { strIngredient1, strIngredient2, strIngredient3, strIngredient4, strIngredient5,
+                strIngredient6, strIngredient7, strIngredient8, strIngredient9, strIngredient10,
+                strIngredient11, strIngredient12, strIngredient13, strIngredient14, strIngredient15,
+                strIngredient16, strIngredient17, strIngredient18, strIngredient19, strIngredient20 };
+        String[] meas = { strMeasure1, strMeasure2, strMeasure3, strMeasure4, strMeasure5,
+                strMeasure6, strMeasure7, strMeasure8, strMeasure9, strMeasure10,
+                strMeasure11, strMeasure12, strMeasure13, strMeasure14, strMeasure15,
+                strMeasure16, strMeasure17, strMeasure18, strMeasure19, strMeasure20 };
 
         for (int i = 0; i < 20; i++) {
             if (ing[i] != null && !ing[i].isBlank()) {
@@ -481,5 +478,4 @@ public class Meal {
         this.strMeasure20 = strMeasure20;
     }
 
-    
 }

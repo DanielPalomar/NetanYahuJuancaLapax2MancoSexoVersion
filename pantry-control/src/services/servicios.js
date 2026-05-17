@@ -1,4 +1,4 @@
-let URL_API = 'https://tu-despensa-back.onrender.com/'; // apuntamos al back subida en render
+let URL_API = 'https://tu-despensa-back.onrender.com'; // apuntamos al back subida en render
 
 async function hacerPeticion(ruta, opciones) {
   if (!opciones) {
