@@ -13,7 +13,7 @@ import com.grupo4.foodappback.services.RecipeTranslatorService;
 // ESTE CONTROLLER SOLO USA EL SERVICIO RecipeTranslatorService:
 //=============================================================
 
-@CrossOrigin(origins = "http://localhost:5500")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
 @RequestMapping("/api/recipes")
 public class RecipeController {

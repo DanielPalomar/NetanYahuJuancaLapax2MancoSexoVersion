@@ -20,7 +20,7 @@ import com.grupo4.foodappback.services.UserService;
 
 import jakarta.validation.Valid;
 
-@CrossOrigin(origins = "http://localhost:5500", originPatterns = "*")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 
 // CONTROLLER PARA TODOS LOS ROLES: guardar y modificar users en la BD
 // ======================================================================

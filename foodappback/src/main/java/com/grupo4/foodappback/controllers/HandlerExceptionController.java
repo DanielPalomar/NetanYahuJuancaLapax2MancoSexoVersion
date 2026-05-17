@@ -18,32 +18,29 @@ import com.grupo4.foodappback.entities.Error;
 import com.grupo4.foodappback.exceptions.BusinessException;
 import com.grupo4.foodappback.exceptions.UserNotFoundException;
 
+@RestControllerAdvice
+public class HandlerExceptionController {
 
-@RestControllerAdvice 
-public class HandlerExceptionController { 
-  
-//maneja errores de valdación (400 - bad request):-> Spring lanza MethodArgumentNotValidException cuando se usa @Valid.
+    // maneja errores de valdación (400 - bad request): Spring lanza
+    // MethodArgumentNotValidException cuando se usa @Valid.
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
 
     public Map<String, Object> handleValidationErrors(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
         ex.getBindingResult().getFieldErrors()
-                .forEach(error ->
-                        errors.put(error.getField(), error.getDefaultMessage())
-                );
+                .forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
         return Map.of(
                 "error", "Error de validación",
                 "message", "Petición errónea",
-                "details", errors
-        );
-        
+                "details", errors);
+
     }
 
-// Maneja recursos no encontradod(404 Not Found):
+    // Maneja recursos no encontradod(404 Not Found):
     @ExceptionHandler(NoHandlerFoundException.class)
 
-    public ResponseEntity<Error> notFoundEx(NoHandlerFoundException e) {         
+    public ResponseEntity<Error> notFoundEx(NoHandlerFoundException e) {
         Error error = new Error();
         error.setDate(new Date());
         error.setError("recurso no encontrado");
@@ -52,21 +49,21 @@ public class HandlerExceptionController {
         // Devuelve el error con código 404
         return ResponseEntity.status(HttpStatus.NOT_FOUND.value()).body(error);
     }
-    
-// Maneja UserNotFoundException (500 INTERNAL_SERVER_ERROR):
-    @ExceptionHandler({UserNotFoundException.class})
+
+    // Maneja UserNotFoundException (500 INTERNAL_SERVER_ERROR):
+    @ExceptionHandler({ UserNotFoundException.class })
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    
-    public Map<String, Object> handleuserNotFoundException(Exception ex){
+
+    public Map<String, Object> handleuserNotFoundException(Exception ex) {
         Map<String, Object> error = new HashMap<>();
         error.put("date", new Date());
         error.put("error", "el usuario no existe!");
-        error.put("message", ex.getMessage());  
+        error.put("message", ex.getMessage());
         error.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
         return error;
     }
 
-//maneja AuthenticationException (401 - Unauthorized):
+    // maneja AuthenticationException (401 - Unauthorized):
     @ExceptionHandler(AuthenticationException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
 
@@ -74,12 +71,12 @@ public class HandlerExceptionController {
         Map<String, Object> error = new HashMap<>();
         error.put("date", new Date());
         error.put("error", "proceda a loguearse");
-        error.put("message", ex.getMessage());  
+        error.put("message", ex.getMessage());
         error.put("status", HttpStatus.UNAUTHORIZED.value());
         return error;
     }
 
-//maneja AccessDeniedException (403 - Forbidden):
+    // maneja AccessDeniedException (403 - Forbidden):
     @ExceptionHandler(AccessDeniedException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
 
@@ -87,12 +84,12 @@ public class HandlerExceptionController {
         Map<String, Object> error = new HashMap<>();
         error.put("date", new Date());
         error.put("error", "usted no tiene permisos");
-        error.put("message", ex.getMessage());  
+        error.put("message", ex.getMessage());
         error.put("status", HttpStatus.UNAUTHORIZED.value());
         return error;
     }
 
-//maneja errores de negocio:
+    // maneja errores de negocio:
     @ExceptionHandler(BusinessException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
 
@@ -100,13 +97,12 @@ public class HandlerExceptionController {
         Map<String, Object> error = new HashMap<>();
         error.put("date", new Date());
         error.put("error", "petición errónea!");
-        error.put("message", ex.getMessage());  
+        error.put("message", ex.getMessage());
         error.put("status", HttpStatus.BAD_REQUEST.value());
         return error;
     }
 
- 
-//maneja runtimeExceptions:
+    // maneja runtimeExceptions:
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<String> handleRuntimeException(RuntimeException ex) {
         return ResponseEntity.badRequest().body(ex.getMessage());

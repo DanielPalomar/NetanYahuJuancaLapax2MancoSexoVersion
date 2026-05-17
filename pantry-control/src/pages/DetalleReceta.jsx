@@ -13,7 +13,7 @@ function DetalleReceta() {
   const [productos, setProductos] = useState([]);
 
   // Cargar los datos iniciales
-  useEffect(function () {
+  useEffect(() => {
     // Si la receta ya viene en el estado de la navegación
     if (location.state) {
       if (location.state.receta) {
@@ -22,7 +22,7 @@ function DetalleReceta() {
     }
 
     // cargar los productos 
-    async function cargarDespensa() {
+    const cargarDespensa = async () => {
       try {
         const datos = await serviciosAPI.obtenerDespensa();
         if (datos) {
@@ -39,7 +39,7 @@ function DetalleReceta() {
   }, [location.state]);
 
   // Si no hay receta, redirigir a la lista
-  useEffect(function () {
+  useEffect(() => {
     if (!receta) {
       if (!location.state) {
         navegar('/recetas');
@@ -65,23 +65,40 @@ function DetalleReceta() {
     const trozos = texto.split('.');
 
 
-    for (let i = 0; i < trozos.length; i++) {
-      const limpio = trozos[i].trim();
-      if (limpio.length > 0) {
-        pasosFinales.push(limpio);
-      }
-    }
+    pasosFinales = trozos.filter(trozo => trozo.trim().length > 0);
   }
 
   // Preparamos los ingredientes
   const listaIngredientes = receta.ingredientes || [];
+
+  // Evitamos .map creando los elementos con un bucle
+  const elementosIngredientes = [];
+  for (let i = 0; i < listaIngredientes.length; i++) {
+    elementosIngredientes.push(
+      <div key={i} className="flex items-center gap-3 py-1">
+        <span className="text-zinc-900 font-medium">{listaIngredientes[i]}</span>
+      </div>
+    );
+  }
+
+  const elementosPasos = [];
+  for (let i = 0; i < pasosFinales.length; i++) {
+    elementosPasos.push(
+      <div key={i} className="flex gap-4">
+        <span className="text-emerald-500 font-bold text-lg">{i + 1}.</span>
+        <p className="text-zinc-600 leading-relaxed pt-0.5">
+          {pasosFinales[i].trim()}.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white pb-20 font-sans text-zinc-900">
 
       <div className="max-w-4xl mx-auto px-6 pt-10">
         <button
-          onClick={function () { navegar(-1); }}
+          onClick={() => navegar(-1)}
           className="flex items-center gap-2 text-zinc-400 hover:text-zinc-900 transition-colors mb-8"
         >
           <ArrowLeft size={20} />
@@ -115,14 +132,7 @@ function DetalleReceta() {
         <div className="flex-1">
           <h2 className="text-lg font-bold mb-6">Ingredientes</h2>
           <div className="space-y-3">
-            {listaIngredientes.map(function (ing, index) {
-
-              return (
-                <div key={index} className="flex items-center gap-3 py-1">
-                  <span className="text-zinc-900 font-medium">{ing}</span>
-                </div>
-              );
-            })}
+            {elementosIngredientes}
           </div>
         </div>
 
@@ -130,18 +140,7 @@ function DetalleReceta() {
         <div className="flex-[2]">
           <h2 className="text-lg font-bold mb-6">Preparación</h2>
           <div className="space-y-8">
-            {pasosFinales.map(function (paso, index) {
-              const numero = index + 1;
-
-              return (
-                <div key={index} className="flex gap-4">
-                  <span className="text-emerald-500 font-bold text-lg">{numero}.</span>
-                  <p className="text-zinc-600 leading-relaxed pt-0.5">
-                    {paso}.
-                  </p>
-                </div>
-              );
-            })}
+            {elementosPasos}
           </div>
         </div>
 

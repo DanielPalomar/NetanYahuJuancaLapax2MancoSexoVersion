@@ -24,77 +24,77 @@ import com.grupo4.foodappback.services.ProductService;
 
 import jakarta.validation.Valid;
 
-
 //CONTROLLER PARA TODOS LOS ROLES: MANEJA LOS PRODUCTOS DEL USER LOGUEADO, SOLO EN LA -- BD -- Y A PARTIR DE SU ID
 //===================================================================================================================
 
-@CrossOrigin(origins="http://localhost:5500", originPatterns = "*")   
+@CrossOrigin(origins = "*", allowedHeaders = "*") // no hace falta poner nada por el origin
 
 @RestController
 @RequestMapping("/api/products")
 
 public class ProductController {
-    
+
     @Autowired
-    private ProductService productService;   
-    
-    //ver los productos de la BD que ha guardo alguna vez el userLog:
+    private ProductService productService;
+
+    // ver los productos de la BD que ha guardo alguna vez el userLog:
     @GetMapping
     public List<Product> getProducts(Authentication authentication) {
-        return productService.getProducts(authentication);    
+        return productService.getProducts(authentication);
     }
-    
+
     // Guardar producto en la BD:
     @PostMapping
     public ResponseEntity<?> createProduct(@Valid @RequestBody Product product,
-                                            Authentication authentication,
-                                            BindingResult result) {
-        if (result.hasErrors()){
+            Authentication authentication,
+            BindingResult result) {
+        if (result.hasErrors()) {
             return validation(result);
-        }        
+        }
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(productService.createProduct(product, authentication));
     }
 
-    // Obtener CUALQUIER producto a partir de su ID -> para obtener a partir de su barcode usamos FOODCONTROLLER:    
+    // Obtener CUALQUIER producto a partir de su ID -> para obtener a partir de su
+    // barcode usamos FOODCONTROLLER:
     @GetMapping("/{id}")
     public Product getById(@PathVariable Long id) {
-        return productService.findById(id);     //este método no necesita saber quien es userLog, así q no usa authentication
+        return productService.findById(id); // este método no necesita saber quien es userLog, así q no usa
+                                            // authentication
     }
-    
-    // modificar producto de la BD a partir de su id: USER solo los suyos, y ADMIN todos:
+
+    // modificar producto de la BD a partir de su id: USER solo los suyos, y ADMIN
+    // todos:
     @PutMapping("/{id}")
     public ResponseEntity<?> updateProduct(@Valid @PathVariable Long id,
-                                 @RequestBody Product product,
-                                 Authentication authentication,
-                                 BindingResult result) {
-        if (result.hasErrors()){
+            @RequestBody Product product,
+            Authentication authentication,
+            BindingResult result) {
+        if (result.hasErrors()) {
             return validation(result);
-        }        
+        }
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(productService.updateProduct(id, product, authentication));        
+                .body(productService.updateProduct(id, product, authentication));
     }
-    
-    //borrar producto a partir de su id: USER solo los suyos, y ADMIN todos: 
+
+    // borrar producto a partir de su id: USER solo los suyos, y ADMIN todos:
     @DeleteMapping("/{id}")
-    public void deleteProduct(@PathVariable Long id,Authentication authentication) {
+    public void deleteProduct(@PathVariable Long id, Authentication authentication) {
         productService.deleteProduct(id, authentication);
     }
 
-
-    // Método común para manejar los errores al usar validaciones directamente en la entity:
+    // Método común para manejar los errores al usar validaciones directamente en la
+    // entity:
     private ResponseEntity<?> validation(BindingResult result) {
         Map<String, String> errors = new HashMap<>();
         result.getFieldErrors().forEach(err -> {
             errors.put(
-                err.getField(),
-                "El campo " + err.getField() + " " + err.getDefaultMessage()
-            );
+                    err.getField(),
+                    "El campo " + err.getField() + " " + err.getDefaultMessage());
         });
         return ResponseEntity.badRequest().body(errors);
     }
-  
+
 }
-    

@@ -11,7 +11,7 @@ function Recetas() {
   useEffect(() => {
     const obtenerInformacion = async () => {
       try {
-        // 1. Obtener la despensa primero
+        // Obtener productos
         const productosDespensa = await serviciosAPI.obtenerDespensa();
         setProductos(productosDespensa || []);
 
@@ -21,7 +21,7 @@ function Recetas() {
           ingredienteABuscar = productosDespensa[0].nombre; // Busca por el primer producto y se ordena por quien caduca primero
         }
 
-        // Obtener recetas basadas en ese ingrediente
+        // Obtener recetas basadas eb lo tomado
         const recetasSugeridas = await serviciosAPI.obtenerRecetasSugeridas(ingredienteABuscar);
         setRecetas(recetasSugeridas || []);
 
@@ -31,16 +31,6 @@ function Recetas() {
     };
     obtenerInformacion();
   }, []);
-
-  function crearTarjeta(receta) {
-    return (
-      <div key={receta.id} className="relative w-[340px] max-w-[90vw] flex-shrink-0">
-        <Link to={'/recetas/' + receta.id} state={{ receta }} className="block w-full h-full">
-          <TarjetaReceta receta={receta} productosPantry={productos} />
-        </Link>
-      </div>
-    );
-  }
 
   return (
     <div className="relative w-full min-h-screen flex flex-col items-center py-12 px-4 sm:px-6 overflow-hidden">
@@ -61,7 +51,13 @@ function Recetas() {
 
         {recetas.length > 0 ? (
           <div className="flex flex-wrap justify-center items-center w-full gap-8">
-            {recetas.map(crearTarjeta)}
+            {recetas.map(receta => (
+              <div key={receta.id} className="relative w-[340px] max-w-[90vw] flex-shrink-0">
+                <Link to={'/recetas/' + receta.id} state={{ receta }} className="block w-full h-full">
+                  <TarjetaReceta receta={receta} productosPantry={productos} />
+                </Link>
+              </div>
+            ))}
           </div>
         ) : (
           <div className="text-center py-24 px-8 border-2 border-dashed border-emerald-200 bg-white/50 rounded-[2.5rem] w-full max-w-2xl shadow-sm">
