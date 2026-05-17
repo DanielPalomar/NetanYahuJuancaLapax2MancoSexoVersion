@@ -33,76 +33,86 @@ import com.grupo4.foodappback.security.filter.JwtValidationFilter;
 @EnableMethodSecurity(prePostEnabled = true)
 
 public class SpringSecurityConfig {
-    
-    //Proporciona el AuthenticationManager de Spring:
+
+    // Proporciona el AuthenticationManager de Spring:
     @Autowired
     private AuthenticationConfiguration authenticationConfiguration;
 
-    /* AUTHENTICATIONMANAGER: se usa en:
+    /*
+     * AUTHENTICATIONMANAGER: se usa en:
      * - JwtAuthenticationFilter (login)
-     * - JwtValidationFilter (validar token)     
-     * Postman lo activa cuando hace POST /login     */
+     * - JwtValidationFilter (validar token)
+     * Postman lo activa cuando hace POST /login
+     */
     @Bean
     AuthenticationManager authenticationManager() throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
-    /* CODIFICADOR DE CONTRASEÑAS: consigue q la contraseña enviada desde Postman:
+    /*
+     * CODIFICADOR DE CONTRASEÑAS: consigue q la contraseña enviada desde Postman:
      * - Se cifra al guardar
-     * - Se compara cifrada en el login     */
+     * - Se compara cifrada en el login
+     */
     @Bean
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    /* ===========================
+    /*
+     * ===========================
      * CONFIGURACIÓN DE SEGURIDAD
-     * =========================== */
+     * ===========================
+     */
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         return http.authorizeHttpRequests(authz -> authz
-            // Login y registro públicos:
-            .requestMatchers(HttpMethod.GET, "/login").permitAll()
-            .requestMatchers(HttpMethod.POST, "/api/users/register").permitAll()
+                // Login y registro públicos:
+                .requestMatchers(HttpMethod.GET, "/login").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/users/register").permitAll()
 
-            // Recursos estáticos
-            .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
-            
-            //Options
-            .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()   
-                       
-            // Resto de peticiones
-            .anyRequest().authenticated()
-        )
+                // Recursos estáticos
+                .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
 
-        /* Filtro de AUTENTICACIÓN: equivale a un endpoint "/login". 
-         * ========================================================
-         * Usamos este endpoint haciendo POST /login y se devuelve un JWT (token) en una response */
-        .addFilter(new JwtAuthenticationFilter(authenticationManager()))
+                // Options
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-        /* Filtro de VALIDACIÓN: se ejecuta cuando añadimos el token:  Authorization: Bearer TOKEN 
-         * ========================================================*/
-       .addFilterBefore(
-            new JwtValidationFilter(authenticationManager()),
-            UsernamePasswordAuthenticationFilter.class
-        )
+                // Resto de peticiones
+                .anyRequest().authenticated())
 
-        // Se desactiva CSRF (API REST):
-        .csrf(config -> config.disable())
+                /*
+                 * Filtro de AUTENTICACIÓN: equivale a un endpoint "/login".
+                 * ========================================================
+                 * Usamos este endpoint haciendo POST /login y se devuelve un JWT (token) en una
+                 * response
+                 */
+                .addFilter(new JwtAuthenticationFilter(authenticationManager()))
 
-        // Configuración CORS -> Postman NO necesita nada especial:
-        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                /*
+                 * Filtro de VALIDACIÓN: se ejecuta cuando añadimos el token: Authorization:
+                 * Bearer TOKEN
+                 * ========================================================
+                 */
+                .addFilterBefore(
+                        new JwtValidationFilter(authenticationManager()),
+                        UsernamePasswordAuthenticationFilter.class)
 
-        // API sin sesiones (stateless)  (JWT):
-        .sessionManagement(management ->
-                management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                // Se desactiva CSRF (API REST):
+                .csrf(config -> config.disable())
 
-        .build();
-        
-    } //fin configuracion seguridad
-    
-    /* ====================
+                // Configuración CORS -> Postman NO necesita nada especial:
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+
+                // API sin sesiones (stateless) (JWT):
+                .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
+                .build();
+
+    } // fin configuracion seguridad
+
+    /*
+     * ====================
      * CONFIGURACIÓN CORS
      * ====================
      * Permite peticiones desde:
@@ -121,11 +131,9 @@ public class SpringSecurityConfig {
         // Métodos HTTP permitidos:
         config.setAllowedMethods(Arrays.asList("GET", "POST", "DELETE", "PUT", "PATCH", "OPTIONS"));
 
-        // Headers permitidos:
-        config.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
+        config.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Accept", "X-Requested-With"));
 
-        config.setAllowCredentials(true);
-
+        config.setAllowCredentials(false);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 
         source.registerCorsConfiguration("/**", config);
@@ -133,18 +141,18 @@ public class SpringSecurityConfig {
         return source;
     } // fin configuración CORS
 
-    /* ============================================
+    /*
+     * ============================================
      * Registro del filtro CORS con prioridad máxima
-     * =============================================*/
+     * =============================================
+     */
     @Bean
     FilterRegistrationBean<CorsFilter> corsFilter() {
 
         FilterRegistrationBean<CorsFilter> corsBean = new FilterRegistrationBean<>(
-                                            new CorsFilter(corsConfigurationSource())
-                                        );
+                new CorsFilter(corsConfigurationSource()));
 
         corsBean.setOrder(Ordered.HIGHEST_PRECEDENCE);
         return corsBean;
     }
 }
-
