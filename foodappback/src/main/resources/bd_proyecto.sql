@@ -46,9 +46,6 @@ CREATE TABLE Users_Roles (
 
 /* =====================================================
 TABLA: products
-se eliminaron weight y url_image y se añadieron c
-antidad y fecha_caducidad cosas que estaban e carrito
-
 ===================================================== */
 CREATE TABLE Products (
     id BIGINT NOT NULL AUTO_INCREMENT,
