@@ -31,14 +31,7 @@ function Despensa() {
   function borrarProducto(id) {
     serviciosAPI.eliminarProducto(id)
       .then(function () {
-        let listaNueva = [];
-        for (let i = 0; i < productos.length; i++) {
-          let p = productos[i];
-          if (p.id !== id) {
-            listaNueva.push(p);
-          }
-        }
-        setProductos(listaNueva);
+        setProductos(productos.filter(p => p.id !== id));
       })
       .catch(function (errorBorrado) {
         alert("Vaya, no se pudo eliminar el producto");
@@ -63,15 +56,9 @@ function Despensa() {
 
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center w-full pointer-events-none">
           <h1 className="text-3xl font-bold text-emerald-950">Mi Despensa</h1>
-          <div className="flex items-center gap-2 mt-1">
-            <span className="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-sm text-xs font-bold flex items-center gap-1">
-              <Hash size={12} /> {productos.length}
-            </span>
-            <p className="text-sm text-slate-500 font-medium">productos en total</p>
-          </div>
         </div>
 
-        {/*El Z-index para que el boton se sobreponga y pueda ser usado*/}
+        {/*El Z-index para que el boton se sobreponga y pueda ser usado (se nos hundia)*/}
         <div className="flex-1 flex justify-end z-10">
           <Link to="/anadir" className="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-sm flex items-center gap-2 font-semibold transition-colors">
             <Plus size={18} /> Añadir producto
@@ -80,14 +67,14 @@ function Despensa() {
       </header>
 
       <main className="w-full flex flex-col items-center px-8 py-12">
-        {/* Contenedor donde se muestran las tarjetas */}
+        {/* contenedor de todo*/}
         <div className="flex flex-row flex-wrap justify-center items-center w-full gap-8">
 
-          {/* Si tenemos productos, los mostramos uno por uno */}
+          {/* Si tenemos productos, los mostramos */}
           {productos.length > 0 ? (
             productos.map(p => {
 
-              // Funciones sencillas para cada tarjeta
+              // editar y borrar
               function editar() {
                 navegar('/editar/' + p.id);
               }
@@ -107,10 +94,8 @@ function Despensa() {
               );
             })
           ) : (
-            // Si la lista está vacía, mostramos un mensaje limpio con esmeralda
-            <div className="text-center py-20 w-full max-w-lg border border-emerald-100 bg-white rounded-sm">
-              <p className="text-3xl font-bold text-emerald-800 uppercase tracking-wider">0 Productos</p>
-              <p className="text-sm font-medium mt-2 text-slate-400 uppercase tracking-widest">Añade algo al inventario</p>
+            // vacio 
+            <div className="text-center">
             </div>
           )}
         </div>

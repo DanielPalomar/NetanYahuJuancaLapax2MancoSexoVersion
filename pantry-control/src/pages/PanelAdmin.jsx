@@ -95,7 +95,7 @@ function PanelAdmin() {
         <td className="px-4 py-3"><span className={claseRol}>{textoRol}</span></td>
         <td className="px-4 py-3">
           <button
-            onClick={function (userId) { return function () { toggleActivo(userId); }; }(u.id)}
+            onClick={() => toggleActivo(u.id)}
             disabled={u.usuario === usuarioLogueado}
             className={`px-3 py-1 rounded text-xs font-bold transition-colors ${u.estaActivo
                 ? 'bg-amber-100 text-amber-700 hover:bg-amber-200'
@@ -107,7 +107,7 @@ function PanelAdmin() {
         </td>
         <td className="px-4 py-3 text-right">
           <button
-            onClick={function (userId) { return function () { eliminarUsuario(userId); }; }(u.id)}
+            onClick={() => eliminarUsuario(u.id)}
             disabled={u.esAdministrador}
             className="text-red-600 hover:text-red-800 font-semibold disabled:opacity-50"
           >
