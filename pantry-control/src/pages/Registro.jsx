@@ -67,7 +67,7 @@ function Registro() {
       />
 
       {/* Tarjeta blanca principal */}
-      <div className="relative z-20 w-full max-w-md bg-white p-10 rounded-[2rem] shadow-sm border border-emerald-100">
+      <div className="relative z-20 w-full max-w-md bg-white p-10 rounded-sm border border-emerald-100">
         {/* Encabezado */}
         <div className="text-center mb-8">
           <h2 className="text-3xl font-bold text-emerald-950 mb-2 tracking-tight">
@@ -78,7 +78,7 @@ function Registro() {
 
         {/* Alerta de error */}
         {error && (
-          <div className="bg-red-50 text-red-600 p-4 rounded-xl mb-6 text-sm border border-red-100 text-center">
+          <div className="bg-red-50 text-red-600 p-4 rounded-sm mb-6 text-sm border border-red-100 text-center">
             {error}
           </div>
         )}
@@ -95,7 +95,7 @@ function Registro() {
                 type="text"
                 required
                 placeholder="Mario"
-                className="w-full px-4 py-3 bbg-[oklch(95% 0.052 163.051)] border border-emerald-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors"
+                className="w-full px-4 py-3 bg-slate-50 border border-emerald-200 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors"
                 value={nombre}
                 onChange={cambiarNombre}
               />
@@ -108,7 +108,7 @@ function Registro() {
                 type="text"
                 required
                 placeholder="Marugan"
-                className="w-full px-4 py-3 bg-[oklch(95% 0.052 163.051)] border border-emerald-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors"
+                className="w-full px-4 py-3 bg-slate-50 border border-emerald-200 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors"
                 value={apellido}
                 onChange={cambiarApellido}
               />
@@ -124,7 +124,7 @@ function Registro() {
               type="text"
               required
               placeholder="mariomarugan"
-              className="w-full px-4 py-3 bg-[oklch(95% 0.052 163.051)] border border-emerald-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors"
+              className="w-full px-4 py-3 bg-slate-50 border border-emerald-200 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors"
               value={usuario}
               onChange={cambiarUsuario}
             />
@@ -139,7 +139,7 @@ function Registro() {
               type="email"
               required
               placeholder="correo@ejemplo.com"
-              className="w-full px-4 py-3 bg-[oklch(95% 0.052 163.051)] border border-emerald-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors"
+              className="w-full px-4 py-3 bg-slate-50 border border-emerald-200 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors"
               value={correo}
               onChange={cambiarCorreo}
             />
@@ -154,7 +154,7 @@ function Registro() {
               type="password"
               required
               placeholder="••••••••"
-              className="w-full px-4 py-3 bg-[oklch(95% 0.052 163.051)] border border-emerald-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors"
+              className="w-full px-4 py-3 bg-slate-50 border border-emerald-200 rounded-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-colors"
               value={contraseña}
               onChange={cambiarContraseña}
             />
@@ -164,7 +164,7 @@ function Registro() {
           {/* Botón */}
           <button
             type="submit"
-            className="w-full bg-emerald-600 text-white font-semibold py-3.5 rounded-xl hover:bg-emerald-700 transition-colors mt-2 shadow-sm shadow-emerald-200"
+            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3.5 rounded-sm transition-colors mt-2"
           >
             Crear cuenta
           </button>
@@ -175,7 +175,7 @@ function Registro() {
           ¿Ya tienes cuenta?{" "}
           <Link
             to="/login"
-            className="text-emerald-700 font-semibold hover:text-emerald-800 transition-colors"
+            className="text-emerald-700 font-semibold hover:text-emerald-800 hover:underline transition-colors"
           >
             Inicia sesión
           </Link>

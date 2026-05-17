@@ -60,9 +60,9 @@ function Recetas() {
             ))}
           </div>
         ) : (
-          <div className="text-center py-24 px-8 border-2 border-dashed border-emerald-200 bg-white/50 rounded-[2.5rem] w-full max-w-2xl shadow-sm">
+          <div className="text-center py-24 px-8 border border-dashed border-emerald-200 bg-white/50 rounded-xl w-full max-w-2xl shadow-sm">
             <h3 className="text-2xl font-bold text-emerald-900 mb-2">Aún no hay recetas</h3>
-            <Link to="/despensa" className="inline-flex items-center justify-center px-8 py-4 text-white bg-emerald-600 rounded-2xl font-bold shadow-lg shadow-emerald-200 hover:bg-emerald-700 hover:-translate-y-1 transition-all">
+            <Link to="/despensa" className="inline-flex items-center justify-center px-8 py-4 text-white bg-emerald-600 rounded-lg font-bold shadow-sm hover:bg-emerald-700 transition-colors">
               Ir a mi despensa
             </Link>
           </div>

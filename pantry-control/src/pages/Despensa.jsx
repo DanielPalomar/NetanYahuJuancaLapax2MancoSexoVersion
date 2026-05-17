@@ -56,24 +56,24 @@ function Despensa() {
     <div className="min-h-screen bg-[#f6f9f7]">
 
       {/* Cabecera de la página con el título y el botón de añadir */}
-      <header className="relative flex items-center justify-between px-8 py-6 border-b bg-white shadow-sm min-h-[100px]">
+      <header className="relative flex items-center justify-between px-8 py-6 border-b border-emerald-100 bg-white min-h-[100px]">
 
         <div className="hidden sm:block flex-1"></div>
 
 
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center w-full pointer-events-none">
-          <h1 className="text-3xl font-bold text-[#1f2937]">Mi Despensa</h1>
+          <h1 className="text-3xl font-bold text-emerald-950">Mi Despensa</h1>
           <div className="flex items-center gap-2 mt-1">
-            <span className="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-lg text-xs font-bold flex items-center gap-1">
+            <span className="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-sm text-xs font-bold flex items-center gap-1">
               <Hash size={12} /> {productos.length}
             </span>
-            <p className="text-sm text-gray-500 font-medium">productos en total</p>
+            <p className="text-sm text-slate-500 font-medium">productos en total</p>
           </div>
         </div>
 
         {/*El Z-index para que el boton se sobreponga y pueda ser usado*/}
         <div className="flex-1 flex justify-end z-10">
-          <Link to="/anadir" className="bg-[#22c55e] hover:bg-[#16a34a] text-white px-5 py-2.5 rounded-xl flex items-center gap-2 font-semibold">
+          <Link to="/anadir" className="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-sm flex items-center gap-2 font-semibold transition-colors">
             <Plus size={18} /> Añadir producto
           </Link>
         </div>
@@ -85,7 +85,7 @@ function Despensa() {
 
           {/* Si tenemos productos, los mostramos uno por uno */}
           {productos.length > 0 ? (
-            productos.map(function (p) {
+            productos.map(p => {
 
               // Funciones sencillas para cada tarjeta
               function editar() {
@@ -107,10 +107,10 @@ function Despensa() {
               );
             })
           ) : (
-            // Si la lista está vacía, mostramos un mensaje
-            <div className="text-center py-20 text-gray-400">
-              <Package size={48} className="mb-3 mx-auto opacity-20" />
-              <p className="text-lg">Tu despensa está vacía</p>
+            // Si la lista está vacía, mostramos un mensaje limpio con esmeralda
+            <div className="text-center py-20 w-full max-w-lg border border-emerald-100 bg-white rounded-sm">
+              <p className="text-3xl font-bold text-emerald-800 uppercase tracking-wider">0 Productos</p>
+              <p className="text-sm font-medium mt-2 text-slate-400 uppercase tracking-widest">Añade algo al inventario</p>
             </div>
           )}
         </div>

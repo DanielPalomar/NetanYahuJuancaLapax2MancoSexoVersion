@@ -1,7 +1,7 @@
 
 function TarjetaReceta({ receta }) {
   return (
-    <div className="flex flex-col h-full bg-white border border-gray-200 overflow-hidden shadow-sm rounded-xl">
+    <div className="flex flex-col h-full bg-white border border-gray-200 overflow-hidden rounded-sm">
       {/* Imagen en caso de que la receta tenga con su titulo */}
       {receta.imagen && (
         <div className="relative aspect-[4/3] bg-gray-100 overflow-hidden">

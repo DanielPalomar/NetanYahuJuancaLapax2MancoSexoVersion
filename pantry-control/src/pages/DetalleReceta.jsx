@@ -71,28 +71,6 @@ function DetalleReceta() {
   // Preparamos los ingredientes
   const listaIngredientes = receta.ingredientes || [];
 
-  // Evitamos .map creando los elementos con un bucle
-  const elementosIngredientes = [];
-  for (let i = 0; i < listaIngredientes.length; i++) {
-    elementosIngredientes.push(
-      <div key={i} className="flex items-center gap-3 py-1">
-        <span className="text-zinc-900 font-medium">{listaIngredientes[i]}</span>
-      </div>
-    );
-  }
-
-  const elementosPasos = [];
-  for (let i = 0; i < pasosFinales.length; i++) {
-    elementosPasos.push(
-      <div key={i} className="flex gap-4">
-        <span className="text-emerald-500 font-bold text-lg">{i + 1}.</span>
-        <p className="text-zinc-600 leading-relaxed pt-0.5">
-          {pasosFinales[i].trim()}.
-        </p>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-white pb-20 font-sans text-zinc-900">
 
@@ -132,7 +110,11 @@ function DetalleReceta() {
         <div className="flex-1">
           <h2 className="text-lg font-bold mb-6">Ingredientes</h2>
           <div className="space-y-3">
-            {elementosIngredientes}
+            {listaIngredientes.map((ing, index) => (
+              <div key={index} className="flex items-center gap-3 py-1">
+                <span className="text-zinc-900 font-medium">{ing}</span>
+              </div>
+            ))}
           </div>
         </div>
 
@@ -140,7 +122,14 @@ function DetalleReceta() {
         <div className="flex-[2]">
           <h2 className="text-lg font-bold mb-6">Preparación</h2>
           <div className="space-y-8">
-            {elementosPasos}
+            {pasosFinales.map((paso, index) => (
+              <div key={index} className="flex gap-4">
+                <span className="text-emerald-500 font-bold text-lg">{index + 1}.</span>
+                <p className="text-zinc-600 leading-relaxed pt-0.5">
+                  {paso.trim()}.
+                </p>
+              </div>
+            ))}
           </div>
         </div>
 

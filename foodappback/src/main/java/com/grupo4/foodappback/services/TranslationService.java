@@ -59,8 +59,14 @@ public class TranslationService {
         System.out.println("Texto que se va a traducir: " + text);
         System.out.println("La longitud del texto al llegar a translate: " + text.length());
 
-        if (text.length() > 500) {
-
+        if (text.length() > 490) {
+            // Buscamos el último espacio antes del límite para no cortar palabras
+            int corte = text.lastIndexOf(" ", 490);
+            if (corte == -1) corte = 490; // Seguridad por si no hay espacios
+            
+            // Traducimos recursivamente las dos mitades de forma sencilla
+            return translate(text.substring(0, corte), from, to) + " " + 
+                   translate(text.substring(corte).trim(), from, to);
         }
 
         String normalized = text.trim().toLowerCase();

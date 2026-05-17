@@ -8,12 +8,12 @@ async function hacerPeticion(ruta, opciones) {
   // Sacar el token JWT del local storage 
   let token = localStorage.getItem('token');
 
-  // Headers por defecto, porque obvio todo es JSON hoy en día
+  // Headers por defecto
   let headers = {
     'Content-Type': 'application/json'
   };
 
-  // Si hay token, añadirlo a las cabeceras para que el backend sepa quién somos
+  // Si hay token, añadirlo a las cabeceras
   if (token) {
     headers['Authorization'] = 'Bearer ' + token;
   }

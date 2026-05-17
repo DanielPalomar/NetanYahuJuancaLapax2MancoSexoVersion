@@ -29,9 +29,7 @@ function Inicio() {
   const autorizado = localStorage.getItem('token');
 
   return (
-    <div className="w-full flex flex-col bg-white">
-
-      {/* contenido principal y subtitulo*/}
+    <div className="w-full flex flex-col bg-white">      {/* contenido principal y subtitulo*/}
       <section className="w-full flex flex-col items-center justify-center pt-20 pb-16 px-6 bg-gradient-to-b from-emerald-50 to-white">
         <div className="w-full max-w-6xl flex flex-col items-center text-center">
           <h1 className="text-7xl md:text-8xl font-black text-emerald-950 mb-4 tracking-tighter leading-tight">
@@ -45,19 +43,19 @@ function Inicio() {
           {autorizado ? (
             <div className="flex flex-col gap-4 w-full max-w-sm mx-auto justify-center px-4 md:hidden">
               <Link to="/despensa" className="w-full">
-                <button className="w-full bg-emerald-600 text-white px-10 py-4 rounded-full font-bold text-lg hover:bg-emerald-700 transition-all shadow-lg active:scale-95 cursor-pointer flex items-center justify-center gap-2">
+                <button className="w-full bg-emerald-600 text-white px-10 py-4 rounded-sm font-bold text-lg hover:bg-emerald-700 transition-colors cursor-pointer flex items-center justify-center gap-2">
                   <Package size={22} /> Mi Despensa
                 </button>
               </Link>
               <Link to="/recetas" className="w-full">
-                <button className="w-full bg-emerald-100 text-emerald-800 border-2 border-emerald-200 px-10 py-4 rounded-full font-bold text-lg hover:bg-emerald-200 transition-all shadow-lg active:scale-95 cursor-pointer flex items-center justify-center gap-2">
+                <button className="w-full bg-emerald-50 text-emerald-800 border border-emerald-200 px-10 py-4 rounded-sm font-bold text-lg hover:bg-emerald-100 transition-colors cursor-pointer flex items-center justify-center gap-2">
                   <BookOpen size={22} /> Recetario
                 </button>
               </Link>
             </div>
           ) : (
             <Link to="/registro">
-              <button className="bg-emerald-600 text-white px-14 py-5 rounded-full font-bold text-lg hover:bg-emerald-700 transition-all shadow-lg hover:scale-105 cursor-pointer">
+              <button className="bg-emerald-600 text-white px-14 py-5 rounded-sm font-bold text-lg hover:bg-emerald-700 transition-colors cursor-pointer">
                 Empezar ahora
               </button>
             </Link>
@@ -74,7 +72,7 @@ function Inicio() {
             <img
               src="/comida.jpg"
               alt="Despensa organizada"
-              className="rounded-[6%] shadow-2xl w-full h-[45%] object-cover"
+              className="rounded-sm border border-emerald-100 w-full h-[45%] object-cover"
             />
           </div>
 
@@ -100,8 +98,8 @@ function Inicio() {
                   <span>Antes</span>
                   <span>40% Desperdiciado</span>
                 </div>
-                <div className="w-full bg-slate-100 h-3.5 rounded-full overflow-hidden">
-                  <div className="bg-slate-300 h-full w-[40%] rounded-full"></div>
+                <div className="w-full bg-slate-100 h-3 rounded-sm overflow-hidden">
+                  <div className="bg-slate-300 h-full w-[40%] rounded-sm"></div>
                 </div>
               </div>
 
@@ -110,8 +108,8 @@ function Inicio() {
                   <span>Con nuestra plataforma</span>
                   <span>5% Desperdiciado</span>
                 </div>
-                <div className="w-full bg-emerald-100 h-3.5 rounded-full overflow-hidden">
-                  <div className="bg-emerald-500 h-full w-[5%] rounded-full"></div>
+                <div className="w-full bg-emerald-100 h-3 rounded-sm overflow-hidden">
+                  <div className="bg-emerald-500 h-full w-[5%] rounded-sm"></div>
                 </div>
               </div>
             </div>
