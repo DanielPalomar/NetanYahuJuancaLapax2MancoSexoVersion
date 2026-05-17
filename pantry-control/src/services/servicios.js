@@ -1,4 +1,4 @@
-let URL_API = 'http://localhost:9090'; // recemos para q siga levantado en el 9090
+let URL_API = 'https://tu-despensa-back.onrender.com/'; // apuntamos al back subida en render
 
 async function hacerPeticion(ruta, opciones) {
   if (!opciones) {
@@ -18,7 +18,7 @@ async function hacerPeticion(ruta, opciones) {
     headers['Authorization'] = 'Bearer ' + token;
   }
 
-  // Si la petición trae cabeceras extra, copiarlas una por una al objeto headers
+  // por si llegan varias cabezeras copiarlas una por una al objeto headers
   if (opciones.headers) {
     let claves = Object.keys(opciones.headers);
     for (let i = 0; i < claves.length; i++) {

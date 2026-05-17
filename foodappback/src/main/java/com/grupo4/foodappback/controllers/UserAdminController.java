@@ -24,18 +24,17 @@ import com.grupo4.foodappback.services.UserService;
 
 import jakarta.validation.Valid;
 
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 
-@CrossOrigin(origins="http://localhost:5500", originPatterns = "*")
-
-// CONTROLLER EXCLUSIVO PARA ROL ADMIN: 
-//=====================================
+// CONTROLLER EXCLUSIVO PARA ROL ADMIN:
+// =====================================
 
 @RestController
 @RequestMapping("/api/users/admin")
 public class UserAdminController {
-    
+
     @Autowired
-    private UserService userService;    
+    private UserService userService;
 
     // Ver todos los users:
     @PreAuthorize("hasRole('ADMIN')")
@@ -49,45 +48,45 @@ public class UserAdminController {
     @GetMapping("/{id}")
     public User getUser(@PathVariable Long id) {
         return userService.getUser(id);
-    }    
+    }
 
     // Modificar o consultar un user existente y lo devuelve:
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
-    public ResponseEntity<?> editUser( @Valid @PathVariable Long id, 
-                                    @RequestBody User user, 
-                                    BindingResult result) {       
-        if (result.hasErrors()){
+    public ResponseEntity<?> editUser(@Valid @PathVariable Long id,
+            @RequestBody User user,
+            BindingResult result) {
+        if (result.hasErrors()) {
             return validation(result);
-        }        
+        }
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(userService.editUser(user, id));    
+                .body(userService.editUser(user, id));
     }
 
     // Borrar un user y devolver la lista de users:
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
-    public List<User> deleteUser (@PathVariable Long id) {
-        return userService.deleteUser(id); 
-    }   
-    
+    public List<User> deleteUser(@PathVariable Long id) {
+        return userService.deleteUser(id);
+    }
+
     // Activar un user:
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/{id}")
-    public User activateUser(@PathVariable Long id) {     
+    public User activateUser(@PathVariable Long id) {
         return userService.activateUser(id);
     }
-    
-    // Método común para manejar los errores al usar validaciones estándar en la entity:
+
+    // Método común para manejar los errores al usar validaciones estándar en la
+    // entity:
     private ResponseEntity<?> validation(BindingResult result) {
         Map<String, String> errors = new HashMap<>();
         result.getFieldErrors().forEach(err -> {
             errors.put(
-                err.getField(),
-                "El campo " + err.getField() + " " + err.getDefaultMessage()
-            );
+                    err.getField(),
+                    "El campo " + err.getField() + " " + err.getDefaultMessage());
         });
         return ResponseEntity.badRequest().body(errors);
-    }    
+    }
 }
