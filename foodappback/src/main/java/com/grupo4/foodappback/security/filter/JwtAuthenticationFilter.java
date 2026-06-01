@@ -206,7 +206,27 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
             // API → JSON
             Map<String, String> body = new HashMap<>();
-            body.put("message", "Error en la autenticación username o password incorrectos!");
+            
+            String message = "Error en la autenticación: usuario o contraseña incorrectos.";
+            
+            // Desenvolvemos la causa raíz de la excepción para identificar el error original
+            Throwable rootCause = failed;
+            while (rootCause.getCause() != null && rootCause != rootCause.getCause()) {
+                rootCause = rootCause.getCause();
+            }
+            
+            if (rootCause instanceof org.springframework.security.core.userdetails.UsernameNotFoundException || 
+                failed instanceof org.springframework.security.core.userdetails.UsernameNotFoundException) {
+                message = "El usuario ingresado no existe.";
+            } else if (failed instanceof org.springframework.security.authentication.BadCredentialsException) {
+                message = "La contraseña ingresada es incorrecta.";
+            } else if (failed instanceof org.springframework.security.authentication.DisabledException) {
+                message = "El usuario está deshabilitado. Contacte a un administrador.";
+            } else if (failed instanceof org.springframework.security.authentication.LockedException) {
+                message = "El usuario está bloqueado.";
+            }
+
+            body.put("message", message);
             body.put("error", failed.getMessage());
             response.getWriter().write(new ObjectMapper().writeValueAsString(body));
             response.setStatus(401);

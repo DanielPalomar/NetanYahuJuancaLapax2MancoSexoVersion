@@ -13,8 +13,8 @@ function Ingreso() {
       localStorage.setItem('token', respuesta.token);
       localStorage.setItem('esAdministrador', respuesta.esAdministrador ? 'true' : 'false');
       window.location.href = '/';
-    }).catch(function () {
-      setError('Error al iniciar sesión');
+    }).catch(function (error) {
+      setError(error.message || 'Error al iniciar sesión');
     });
   }
 

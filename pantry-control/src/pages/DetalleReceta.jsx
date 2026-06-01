@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { ArrowLeft, Utensils } from 'lucide-react';
 import { serviciosAPI } from '../services/servicios';
+import Cargador from '../components/Cargador';
 
 function DetalleReceta() {
   const { id } = useParams();
@@ -50,8 +51,9 @@ function DetalleReceta() {
   // en caso de no haber recetas o si estan cargando (con la api demora un tiempillo)
   if (!receta) {
     return (
-      <div className="flex h-screen items-center justify-center bg-white">
-        <div className="text-zinc-400 text-sm tracking-widest uppercase">Cargando...</div>
+      <div className="flex flex-col h-screen items-center justify-center bg-white">
+        <Cargador />
+        <div className="text-emerald-800 text-sm tracking-widest uppercase font-medium mt-3">Cargando receta...</div>
       </div>
     );
   }

@@ -14,6 +14,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -38,6 +39,20 @@ public class SpringSecurityConfig {
     @Autowired
     private AuthenticationConfiguration authenticationConfiguration;
 
+    // Inyectamos el servicio que carga los usuarios de la base de datos
+    @Autowired
+    private com.grupo4.foodappback.services.JpaUserDetailsService userDetailsService;
+
+    // Configuramos el DaoAuthenticationProvider para que NO oculte las excepciones de UsernameNotFoundException
+    @Bean
+    public org.springframework.security.authentication.dao.DaoAuthenticationProvider authenticationProvider() {
+        org.springframework.security.authentication.dao.DaoAuthenticationProvider authProvider = 
+            new org.springframework.security.authentication.dao.DaoAuthenticationProvider(userDetailsService);
+        authProvider.setPasswordEncoder(passwordEncoder());
+        authProvider.setHideUserNotFoundExceptions(false); // IMPORTANTE: permite saber si el usuario no existe
+        return authProvider;
+    }
+
     /*
      * AUTHENTICATIONMANAGER: se usa en:
      * - JwtAuthenticationFilter (login)
@@ -56,7 +71,9 @@ public class SpringSecurityConfig {
      */
     @Bean
     PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        // descomentar para que se vuelva a encriptar
+        // return new BCryptPasswordEncoder();
+        return NoOpPasswordEncoder.getInstance();
     }
 
     /*

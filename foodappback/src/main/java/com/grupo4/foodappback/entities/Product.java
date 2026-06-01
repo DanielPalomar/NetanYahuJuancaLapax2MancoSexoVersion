@@ -28,10 +28,12 @@ public class Product {
     private String barcode;
 
     @IsRequired
-    @Size(max = 20, message = "{Size.product.name}")
+    // Aumentamos el tamaño máximo a 100 para permitir nombres de productos más largos y descriptivos sin lanzar errores de validación
+    @Size(max = 100, message = "{Size.product.name}")
     private String name;
 
-    @Size(max = 20, message = "{Size.product.brand}")
+    // Aumentamos el tamaño máximo a 100 para permitir marcas más largas sin lanzar errores de validación
+    @Size(max = 100, message = "{Size.product.brand}")
     private String brand;
 
     private Integer cantidad;

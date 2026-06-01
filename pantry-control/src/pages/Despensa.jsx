@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Plus, Package, Hash } from 'lucide-react';
 import { serviciosAPI } from '../services/servicios';
 import TarjetaProducto from '../components/TarjetaProducto';
+import Cargador from '../components/Cargador';
 
 // Esta es la página principal donde vemos todos nuestros productos
 function Despensa() {
@@ -13,17 +14,23 @@ function Despensa() {
   // para saber si ha habido un fallo al cargar los datos
   const [error, setError] = useState(false);
 
+  // estado para controlar la rueda de carga (cargando)
+  const [cargando, setCargando] = useState(true);
+
 
   // esto carga los datitos
   function cargarDatosDelServidor() {
+    setCargando(true);
     serviciosAPI.obtenerDespensa()
       .then(function (datos) {
         if (datos != null) {
           setProductos(datos);
         }
+        setCargando(false);
       })
       .catch(function (fallo) {
         setError(true);
+        setCargando(false);
       });
   }
 
@@ -70,8 +77,13 @@ function Despensa() {
         {/* contenedor de todo*/}
         <div className="flex flex-row flex-wrap justify-center items-center w-full gap-8">
 
-          {/* Si tenemos productos, los mostramos */}
-          {productos.length > 0 ? (
+          {/* Rueda de carga si está cargando */}
+          {cargando ? (
+            <div className="py-12">
+              <Cargador />
+              <p className="text-emerald-800/60 text-sm mt-2 text-center font-medium">Cargando despensa...</p>
+            </div>
+          ) : productos.length > 0 ? (
             productos.map(p => {
 
               // editar y borrar
@@ -95,7 +107,8 @@ function Despensa() {
             })
           ) : (
             // vacio 
-            <div className="text-center">
+            <div className="text-center py-8">
+              <p className="text-emerald-800/50">Tu despensa está vacía.</p>
             </div>
           )}
         </div>

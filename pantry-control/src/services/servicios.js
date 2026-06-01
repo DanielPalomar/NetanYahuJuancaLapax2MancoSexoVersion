@@ -39,7 +39,7 @@ async function hacerPeticion(ruta, opciones = {}) {
       } catch (err) {
         alert('Error' + err.message);
       }
-      let mensaje = errorData.mensaje || 'Error: ' + respuesta.status;
+      let mensaje = errorData.mensaje || errorData.message || 'Error: ' + respuesta.status;
       throw new Error(mensaje);
     }
 

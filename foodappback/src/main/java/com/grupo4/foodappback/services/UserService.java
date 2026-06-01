@@ -60,9 +60,12 @@ public class UserService {
 
         // Se codifica la contraseña con el encoder que hemos puesto arriba. NUNCA se
         // debe guardar en texto plano.
+        // descomentar para que se vuelva a encriptar
+        /*
         if (user.getPassword() != null && !user.getPassword().isBlank()) {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
         }
+        */
 
         return userRepository.save(user);
     }
@@ -102,7 +105,9 @@ public class UserService {
         userFound.setEmail(user.getEmail());
 
         if (user.getPassword() != null && !user.getPassword().isEmpty()) {
-            userFound.setPassword(passwordEncoder.encode(user.getPassword()));
+            // descomentar para que se vuelva a encriptar
+            // userFound.setPassword(passwordEncoder.encode(user.getPassword()));
+            userFound.setPassword(user.getPassword());
         }
 
         return null;
@@ -143,7 +148,9 @@ public class UserService {
         userFound.setEmail(user.getEmail());
 
         if (user.getPassword() != null && !user.getPassword().isEmpty()) {
-            userFound.setPassword(passwordEncoder.encode(user.getPassword()));
+            // descomentar para que se vuelva a encriptar
+            // userFound.setPassword(passwordEncoder.encode(user.getPassword()));
+            userFound.setPassword(user.getPassword());
         }
 
         // Añadir roles al usuario:

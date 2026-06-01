@@ -13,10 +13,15 @@ function TarjetaReceta({ receta }) {
         </div>
       )}
 
-      <div className="p-4 flex flex-col items-center text-center flex-grow justify-center">
+      <div className="p-4 flex flex-col items-center text-center flex-grow justify-center gap-2">
         <h3 className="text-lg font-bold text-gray-900 leading-snug line-clamp-2">
           {receta.titulo}
         </h3>
+        {receta.coincidencias !== undefined && receta.coincidencias > 0 && (
+          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">
+            Tienes {receta.coincidencias} {receta.coincidencias === 1 ? 'ingrediente' : 'ingredientes'}
+          </span>
+        )}
       </div>
     </div>
   );
