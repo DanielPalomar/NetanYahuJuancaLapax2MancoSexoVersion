@@ -25,17 +25,77 @@ public class TranslationService {
     private final Map<String, String> cache = new ConcurrentHashMap<>();
 
     // ======================
-    // DICCIONARIO LOCAL
+    // DICCIONARIOS LOCALES (Bilingüe)
     // ======================
-    private final Map<String, String> dictionary = Map.of(
-            "ternera", "beef",
-            "pollo", "chicken",
-            "cerdo", "pork",
-            "arroz", "rice",
-            "cebolla", "onion",
-            "tomate", "tomato",
-            "ajo", "garlic",
-            "merluza", "hake");
+    private final Map<String, String> dictionaryEsEn = Map.ofEntries(
+            Map.entry("ternera", "beef"),
+            Map.entry("pollo", "chicken"),
+            Map.entry("cerdo", "pork"),
+            Map.entry("arroz", "rice"),
+            Map.entry("cebolla", "onion"),
+            Map.entry("tomate", "tomato"),
+            Map.entry("ajo", "garlic"),
+            Map.entry("merluza", "hake"),
+            Map.entry("huevo", "egg"),
+            Map.entry("leche", "milk"),
+            Map.entry("queso", "cheese"),
+            Map.entry("mantequilla", "butter"),
+            Map.entry("harina", "flour"),
+            Map.entry("patata", "potato"),
+            Map.entry("pan", "bread"),
+            Map.entry("aceite", "oil"),
+            Map.entry("limon", "lemon"),
+            Map.entry("zanahoria", "carrot"),
+            Map.entry("manzana", "apple"),
+            Map.entry("platano", "banana"),
+            Map.entry("naranja", "orange"),
+            Map.entry("azucar", "sugar"),
+            Map.entry("sal", "salt"),
+            Map.entry("pimienta", "pepper"),
+            Map.entry("espinaca", "spinach"),
+            Map.entry("agua", "water")
+    );
+
+    private final Map<String, String> dictionaryEnEs = Map.ofEntries(
+            Map.entry("chicken", "pollo"),
+            Map.entry("beef", "ternera"),
+            Map.entry("pork", "cerdo"),
+            Map.entry("rice", "arroz"),
+            Map.entry("onion", "cebolla"),
+            Map.entry("tomato", "tomate"),
+            Map.entry("garlic", "ajo"),
+            Map.entry("hake", "merluza"),
+            Map.entry("egg", "huevo"),
+            Map.entry("eggs", "huevos"),
+            Map.entry("milk", "leche"),
+            Map.entry("cheese", "queso"),
+            Map.entry("butter", "mantequilla"),
+            Map.entry("flour", "harina"),
+            Map.entry("potato", "patata"),
+            Map.entry("potatoes", "patatas"),
+            Map.entry("bread", "pan"),
+            Map.entry("oil", "aceite"),
+            Map.entry("olive oil", "aceite de oliva"),
+            Map.entry("lemon", "limón"),
+            Map.entry("carrot", "zanahoria"),
+            Map.entry("carrots", "zanahorias"),
+            Map.entry("apple", "manzana"),
+            Map.entry("banana", "plátano"),
+            Map.entry("orange", "naranja"),
+            Map.entry("sugar", "azúcar"),
+            Map.entry("salt", "sal"),
+            Map.entry("pepper", "pimienta"),
+            Map.entry("spinach", "espinaca"),
+            Map.entry("water", "agua"),
+            Map.entry("yeast", "levadura"),
+            Map.entry("parsley", "perejil"),
+            Map.entry("cinnamon", "canela"),
+            Map.entry("vanilla", "vainilla"),
+            Map.entry("honey", "miel"),
+            Map.entry("ginger", "jengibre"),
+            Map.entry("mustard", "mostaza"),
+            Map.entry("vinegar", "vinagre")
+    );
 
     // ======================
     // API PUBLICA
@@ -82,7 +142,13 @@ public class TranslationService {
 
         // 2. DICCIONARIO (evita API para palabras simples)
         if (from.equals("es") && to.equals("en")) {
-            String dictValue = dictionary.get(normalized);
+            String dictValue = dictionaryEsEn.get(normalized);
+            if (dictValue != null) {
+                cache.put(key, dictValue);
+                return dictValue;
+            }
+        } else if (from.equals("en") && to.equals("es")) {
+            String dictValue = dictionaryEnEs.get(normalized);
             if (dictValue != null) {
                 cache.put(key, dictValue);
                 return dictValue;

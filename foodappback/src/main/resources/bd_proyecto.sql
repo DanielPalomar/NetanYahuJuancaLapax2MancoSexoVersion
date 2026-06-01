@@ -55,7 +55,6 @@ CREATE TABLE Products (
     cantidad INT DEFAULT 1,
     fecha_caducidad DATE,
     user_id BIGINT NOT NULL,
-    CONSTRAINT uk_products_barcode UNIQUE (barcode),
     CONSTRAINT pk_products PRIMARY KEY (id),
     CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES Users (id)
 );

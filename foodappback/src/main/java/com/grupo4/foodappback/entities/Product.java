@@ -3,7 +3,6 @@ package com.grupo4.foodappback.entities;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.grupo4.foodappback.validations.IsRequired;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -12,11 +11,13 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
 
 @Entity
+// Sin restricción UNIQUE en barcode: el mismo producto puede existir varias veces con distintas fechas
 @Table(name = "products")
 public class Product {
 
@@ -24,7 +25,7 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true)
+    // Ya no es unique por sí solo: se permite repetir barcode si la fecha de caducidad es distinta
     private String barcode;
 
     @IsRequired

@@ -37,7 +37,8 @@ async function hacerPeticion(ruta, opciones = {}) {
       try {
         errorData = await respuesta.json();
       } catch (err) {
-        alert('Error' + err.message);
+        // Si la respuesta no es JSON, no pasa nada, simplemente usamos el código de estado
+        console.error('La respuesta del servidor no es JSON:', err.message);
       }
       let mensaje = errorData.mensaje || errorData.message || 'Error: ' + respuesta.status;
       throw new Error(mensaje);
@@ -88,7 +89,7 @@ export let serviciosAPI = {
   // trae los productos y traduce los nombres del backend (porque están en inglés) tipo un diccionario 
   async obtenerDespensa() {
     let lista = await hacerPeticion('/api/products', { method: 'GET' }) || [];
-    return lista.map(p => ({
+    let productos = lista.map(p => ({
       id: p.id,
       nombre: p.name,
       marca: p.brand,
@@ -96,6 +97,16 @@ export let serviciosAPI = {
       cantidad: p.cantidad,
       fechaCaducidad: p.fechaCaducidad
     }));
+
+    // Ordenar por fecha de caducidad: los que caducan antes van primero, los que no tienen fecha van al final
+    productos.sort(function (a, b) {
+      if (!a.fechaCaducidad && !b.fechaCaducidad) return 0;
+      if (!a.fechaCaducidad) return 1;  // sin fecha va al final
+      if (!b.fechaCaducidad) return -1; // sin fecha va al final
+      return new Date(a.fechaCaducidad) - new Date(b.fechaCaducidad);
+    });
+
+    return productos;
   },
 
   // insertar productos 
@@ -146,7 +157,8 @@ export let serviciosAPI = {
   },
 
   async obtenerRecetasSugeridas(ingrediente) {
-    let res = await hacerPeticion('/api/recipes/ingredients?ingredient=' + ingrediente, { method: 'GET' });
+    // encodeURIComponent para que caracteres especiales (tildes, ñ, espacios) no rompan la URL
+    let res = await hacerPeticion('/api/recipes/ingredients?ingredient=' + encodeURIComponent(ingrediente), { method: 'GET' });
     let meals = res.meals || [];
 
     return meals.map(r => {
